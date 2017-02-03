@@ -46,6 +46,6 @@ TODO.
   (where it makes sense).
 
 * There should be usage examples that cover the most common use cases
-  (the best place would is an IPython/Jupyter notebook).
+  (the best place would be an IPython/Jupyter notebook).
 
 * Keep dependencies down.
