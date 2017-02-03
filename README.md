@@ -13,7 +13,9 @@ re-usable tools. They are intended to work well with scikit-learn and
 pandas make the integration of those libraries easier.
 
 The best way to get started is to have a look at the [notebooks
-folder](LINK), especially at the [showcase notebook](LINK).
+folder](https://github.com/ottogroup/dstoolbox/tree/master/notebooks),
+especially at the 
+[showcase notebook](https://github.com/ottogroup/dstoolbox/blob/master/notebooks/Showcase.ipynb).
 
 The tools included here are used by us at Otto Group BI for our
 production services, as well as by individual members for machine
