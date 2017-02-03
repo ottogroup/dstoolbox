@@ -4,7 +4,7 @@ branches:
   only:
     - master
 python:
-  - "3.4"
+  - "3.6"
 addons:
   apt:
     packages:
@@ -17,7 +17,7 @@ install:
   - travis_wait travis_retry pip install -r requirements.txt
   - travis_wait travis_retry pip install -r requirements-dev.txt
   - travis_retry python setup.py develop
-script: py.test
+script: py.test && pylint dstoolbox
 cache:
   - apt
   - directories:
