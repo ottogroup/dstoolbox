@@ -6,6 +6,8 @@ This repository contains tools that make working with
 [scikit-learn](http://scikit-learn.org/) and
 [pandas](http://pandas.pydata.org/) easier.
 
+[![Build Status](https://travis-ci.org/ottogroup/dstoolbox.svg?branch=master)](https://travis-ci.org/ottogroup/dstoolbox)
+
 ## What is this?
 
 dstoolbox is not one big tool but rather an amalgamation of small
