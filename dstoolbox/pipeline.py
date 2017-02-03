@@ -414,6 +414,9 @@ def timing_decorator(
     """Decorator that wraps the indicated method of the estimator into
     a wrapper that measures time.
 
+    By default, the outputs are just printed to the console. They take a
+    form that allows the user to parse each line as a dict or json.
+
     est : sklearn.BaseEstimator
       An sklearn estimator that is part of the profiled pipeline
       steps.
@@ -440,21 +443,25 @@ def timing_decorator(
         result = func(*args[1:], **kwargs)
         toc = time.time()
 
-        intro = "Timing '{}' of '{}':".format(method_name, name[:24])
-        out = ("{:<54}{:.3f} s".format(
-            intro,
-            toc - tic,
-        ))
-
+        s_name = '"name": {:<30}'.format('"' + name[:28] + '"')
+        s_method = '"method": {:<20}'.format('"' + method_name[:18] + '"')
+        s_dura = '"duration": {:>12.3f}'.format(toc - tic)
+        s_shape_tmpl = '"shape": {:<}'
         try:
             shape = result.shape
-            shape_str = 'x'.join(map(str, shape))
-            out += " | shape: {}".format(shape_str)
+            shape_x = '"' + 'x'.join(map(str, shape)) + '"'
+            s_shape = s_shape_tmpl.format(shape_x)
         except AttributeError:
-            pass
+            s_shape = s_shape_tmpl.format('"-"')
 
-        sink(out)
+        out = '{}, {}, {}, {}'.format(
+            s_name,
+            s_method,
+            s_dura,
+            s_shape,
+        )
 
+        sink("{" + out + "}")
         return result
     return wrapper
 
@@ -517,6 +524,7 @@ class TimedPipeline(Pipeline):
         Keys are step names and values are steps parameters.
 
     """
+
     def __init__(self, steps, sink=print):
         # pylint: disable=super-init-not-called
         self.steps = _add_timed_sequence(steps, sink)
@@ -538,3 +546,7 @@ class TimedPipeline(Pipeline):
 
         """
         self.steps = _add_timed_sequence(self.steps, self.sink)
+
+    def transform(self, *args, **kwargs):
+        self.sink(self.header)
+        super().transform(*args, **kwargs)

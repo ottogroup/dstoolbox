@@ -1,5 +1,6 @@
 """Tests for pipeline.py."""
 
+import json
 import pickle
 import time
 from unittest.mock import Mock
@@ -547,10 +548,33 @@ class TestDataFrameFeatureUnion:
 
 
 class TestTimedPipeline:
-    def assert_lines_correct(self, lines):
+    def split_line(self, line):
+        line = line.strip('{}')
+        parts = line.split(',')
+        return [part.strip() for part in parts]
+
+    def assert_lines_correct_form(self, lines):
         for line in lines:
-            assert line.startswith('Timing ')
-            assert line[-1].isdigit() or (line[-1] == 's')
+            assert line.startswith('{')
+            assert line.endswith('}')
+
+            parts = self.split_line(line)
+            assert parts[0].startswith('"name":')
+            assert parts[1].startswith('"method":')
+            assert parts[2].startswith('"duration":')
+            assert parts[3].startswith('"shape":')
+
+            json.loads(line)  # is parseable as json
+
+    def assert_lines_same_output(self, line0, line1):
+        # problem: timing is a little random, so exact equality cannot be
+        # guaranteed.
+        assert len(line0.strip('{} ')) == len(line1.strip('{} '))
+        dct0 = json.loads(line0)
+        dct1 = json.loads(line1)
+        for key in ('name', 'method', 'shape'):
+            assert dct0[key] == dct1[key]
+        assert np.isclose(dct0['duration'], dct1['duration'], atol=0.02)
 
     def make_slow_function(self, sleep_time):
         def slow_func(X):
@@ -587,18 +611,12 @@ class TestTimedPipeline:
     @pytest.fixture
     def expected(self):
         return [(
-            "Timing 'transform' of 'sleep_023':                    0.023 s "
-            "| shape: 100x20"
+            '{"name": "sleep_023"                   , "method": "transform"   '
+            '      , "duration":        0.023, "shape": "100x20"}'
         ), (
-            "Timing 'transform' of 'sleep_055':                    0.055 s "
-            "| shape: 100x20"
-        ), (
-            "Timing 'transform' of 'sleep_023':                    0.023 s "
-            "| shape: 100x20"
-        ), (
-            "Timing 'transform' of 'sleep_055':                    0.055 s "
-            "| shape: 100x20"
-        )]
+            '{"name": "sleep_055"                   , "method": "transform"   '
+            '      , "duration":        0.055, "shape": "100x20"}'
+        )] * 2
 
     def test_pipeline_is_functional(self, timed_pipeline, data):
         X, y = data
@@ -613,9 +631,9 @@ class TestTimedPipeline:
 
         lines = [c[0][0] for c in sink.call_args_list]
         assert len(lines) == 3 + 3 + 1
-        self.assert_lines_correct(lines)
-        assert lines[1] == expected[0]
-        assert lines[4] == expected[1]
+        self.assert_lines_correct_form(lines)
+        self.assert_lines_same_output(lines[1], expected[0])
+        self.assert_lines_same_output(lines[4], expected[1])
 
     def test_sink_called_correctly_predict(
             self, timed_pipeline, data, expected):
@@ -625,11 +643,11 @@ class TestTimedPipeline:
 
         lines = [c[0][0] for c in sink.call_args_list]
         assert len(lines) == 3 + 3 + 1 + 1 + 1 + 1
-        self.assert_lines_correct(lines)
-        assert lines[1] == expected[0]
-        assert lines[4] == expected[1]
-        assert lines[7] == expected[2]
-        assert lines[8] == expected[3]
+        self.assert_lines_correct_form(lines)
+        self.assert_lines_same_output(lines[1], expected[0])
+        self.assert_lines_same_output(lines[4], expected[1])
+        self.assert_lines_same_output(lines[7], expected[2])
+        self.assert_lines_same_output(lines[8], expected[3])
 
     def test_sink_called_correctly_predict_proba(
             self, timed_pipeline, data, expected):
@@ -639,11 +657,11 @@ class TestTimedPipeline:
 
         lines = [c[0][0] for c in sink.call_args_list]
         assert len(lines) == 3 + 3 + 1 + 1 + 1 + 1
-        self.assert_lines_correct(lines)
-        assert lines[1] == expected[0]
-        assert lines[4] == expected[1]
-        assert lines[7] == expected[2]
-        assert lines[8] == expected[3]
+        self.assert_lines_correct_form(lines)
+        self.assert_lines_same_output(lines[1], expected[0])
+        self.assert_lines_same_output(lines[4], expected[1])
+        self.assert_lines_same_output(lines[7], expected[2])
+        self.assert_lines_same_output(lines[8], expected[3])
 
     def test_sink_called_correctly_other_shape(self, timed_pipeline, data):
         sink = timed_pipeline.sink
@@ -652,19 +670,19 @@ class TestTimedPipeline:
 
         lines = [c[0][0] for c in sink.call_args_list]
         assert len(lines) == 3 + 3 + 1 + 1 + 1 + 1
-        self.assert_lines_correct(lines)
-        assert lines[1] == (
-            "Timing 'transform' of 'sleep_023':                    0.023 s "
-            "| shape: 50x5")
-        assert lines[4] == (
-            "Timing 'transform' of 'sleep_055':                    0.055 s "
-            "| shape: 50x5")
-        assert lines[7] == (
-            "Timing 'transform' of 'sleep_023':                    0.023 s "
-            "| shape: 75x5")
-        assert lines[8] == (
-            "Timing 'transform' of 'sleep_055':                    0.055 s "
-            "| shape: 75x5")
+        self.assert_lines_correct_form(lines)
+        self.assert_lines_same_output(lines[1], (
+            '{"name": "sleep_023"                   , "method": "transform"   '
+            '      , "duration":        0.023, "shape": "50x5"}'))
+        self.assert_lines_same_output(lines[4], (
+            '{"name": "sleep_055"                   , "method": "transform"   '
+            '      , "duration":        0.055, "shape": "50x5"}'))
+        self.assert_lines_same_output(lines[7], (
+            '{"name": "sleep_023"                   , "method": "transform"   '
+            '      , "duration":        0.023, "shape": "75x5"}'))
+        self.assert_lines_same_output(lines[8], (
+            '{"name": "sleep_055"                   , "method": "transform"   '
+            '      , "duration":        0.055, "shape": "75x5"}'))
 
     def test_very_long_name(self, timed_pipeline_cls, steps, data, expected):
         steps[0] = (
@@ -676,10 +694,10 @@ class TestTimedPipeline:
 
         lines = [c[0][0] for c in sink.call_args_list]
         assert len(lines) == 3 + 3 + 1
-        self.assert_lines_correct(lines)
+        self.assert_lines_correct_form(lines)
         assert lines[1] == (
-            "Timing 'transform' of 'a name that is much long':     0.023 s "
-            "| shape: 100x20")
+            '{"name": "a name that is much longer t", "method": "transform"'
+            '         , "duration":        0.023, "shape": "100x20"}')
         assert lines[4] == expected[1]
 
     def test_pipeline_is_pickleable(
@@ -707,7 +725,7 @@ class TestTimedPipeline:
         stdout = capsys.readouterr()[0].strip()
         lines = stdout.split('\n')
         assert len(lines) == 4 + 2 + 2  # from fit + 2 x predict_proba
-        self.assert_lines_correct(lines)
+        self.assert_lines_correct_form(lines)
 
     def test_shed_timing(self, timed_pipeline, data):
         sink = timed_pipeline.sink
@@ -727,7 +745,7 @@ class TestTimedPipeline:
 
         lines = [c[0][0] for c in sink.call_args_list]
         assert len(lines) == 3 + 3 + 1 + 1 + 1 + 1
-        self.assert_lines_correct(lines)
+        self.assert_lines_correct_form(lines)
         assert lines[1] == expected[0]
         assert lines[4] == expected[1]
         assert lines[7] == expected[2]
