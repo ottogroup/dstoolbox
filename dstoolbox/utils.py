@@ -28,32 +28,37 @@ def normalize_matrix(arr):
     return normalized
 
 
-def cosine_similarity(arr0, arr1):
-    """Compute the cosine similarity between 2 arrays.
+def cosine_similarity(arr0, arr1=None):
+    """Compute the pairwise cosine similarities between 2 arrays.
 
-    In contrast to `scipy.spacial.distance.cosine`, this is vectorized
-    (hence faster) and this calculates cosine similarity, not cosine
-    distance.
+    In contrast to `scipy.spacial.distance.cosine`, this works for more
+    than 1 sample (and is also faster for many samples); furthermore,
+    this calculates cosine similarity, not cosine distance.
 
     Parameters
     ----------
     arr0 : numpy.ndarray 2d
       First array.
 
-    arr1 : numpy.ndarray 2d
-      Second array
+    arr1 : numpy.ndarray 2d or None (default=None)
+      Second array; if not given, calculate similarity to first array.
 
     Returns
     -------
-    similarity : numpy.ndarray 1d
+    similarity : numpy.ndarray
       The rowwise cosine similarities.
 
     """
-    if arr0.shape[1] != arr1.shape[1]:
-        raise ValueError("Incompatible shapes: {} vs {}.".format(
-            arr0.shape[1], arr1.shape[1]))
+    if arr1 is not None:
+        if arr0.shape[1] != arr1.shape[1]:
+            raise ValueError("Incompatible shapes: {} vs {}.".format(
+                arr0.shape[1], arr1.shape[1]))
 
-    norm0, norm1 = normalize_matrix(arr0), normalize_matrix(arr1)
+    norm0 = normalize_matrix(arr0)
+    if arr1 is None:
+        norm1 = norm0
+    else:
+        norm1 = normalize_matrix(arr1)
     similarity = np.dot(norm0, norm1.T)
     return similarity
 

@@ -63,6 +63,20 @@ class TestCosineSimilarity:
 
         assert np.allclose(cosine_similarity(arr0, arr1), [-1., 1])
 
+    def test_cosine_similarity_different_num_samples(self, cosine_similarity):
+        arr0 = np.random.random((50, 10))
+        arr1 = np.random.random((40, 10))
+        result = cosine_similarity(arr0, arr1)
+
+        assert result.shape == (50, 40)
+
+    def test_cosine_similarity_arity_1(self, cosine_similarity):
+        arr = np.random.random((50, 10))
+        result_arity_1 = cosine_similarity(arr)
+        result_arity_2 = cosine_similarity(arr, arr)
+
+        assert np.allclose(result_arity_1, result_arity_2)
+
     @pytest.mark.parametrize('vec', np.random.random((100, 40)))
     def test_cosine_similarity_comparison_scipy(self, cosine_similarity, vec):
         arr0 = vec[:20].reshape(1, -1)
@@ -70,24 +84,6 @@ class TestCosineSimilarity:
         result = cosine_similarity(arr0, arr1)
         expected = 1 - cosine(arr0, arr1)
         assert np.isclose(result, expected)
-
-    def test_cosine_similarity_faster_than_scipy(self, cosine_similarity):
-        arr = np.random.random((100, 40))
-
-        sliced = [(vec[:20].reshape(1, -1), vec[20:].reshape(1, -1))
-                  for vec in arr]
-        tic = time.time()
-        for arr0, arr1 in sliced:
-            cosine(arr0, arr1)
-        time_scipy = time.time() - tic
-
-        arr0 = arr[:, :20]
-        arr1 = arr[:, 20:]
-        tic = time.time()
-        cosine_similarity(arr0, arr1)
-        time_dstb = time.time() - tic
-
-        assert time_scipy > 2 * time_dstb
 
 
 class TestFastArgsort:
