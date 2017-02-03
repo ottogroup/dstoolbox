@@ -1,0 +1,24 @@
+language: python
+sudo: false
+branches:
+  only:
+    - master
+python:
+  - "3.4"
+addons:
+  apt:
+    packages:
+    - libblas-dev
+    - liblapack-dev
+    - gfortran
+before_install:
+  - pip install -U pip setuptools wheel
+install:
+  - travis_wait travis_retry pip install -r requirements.txt
+  - travis_wait travis_retry pip install -r requirements-dev.txt
+  - travis_retry python setup.py develop
+script: py.test
+cache:
+  - apt
+  - directories:
+    - $HOME/.cache/pip
