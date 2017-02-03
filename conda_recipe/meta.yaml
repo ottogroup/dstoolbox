@@ -1,0 +1,32 @@
+package:
+  name: dstoolbox
+  # version is drawn automatically from __conda_version__.txt
+
+build:
+  number: 14
+
+source:
+  path: ..
+
+requirements:
+  build:
+    - python ==3.5.2
+    - pandas
+    - scikit-learn
+
+  run:
+    - python
+    - pandas
+    - scikit-learn
+
+
+test:
+  commands:
+    - py.test --pyargs dstoolbox
+
+  requires:
+    - pytest ==2.9.2
+    - pytest-cov ==2.2.1
+
+  imports:
+    - dstoolbox
