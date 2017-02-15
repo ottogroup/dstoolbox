@@ -33,17 +33,22 @@ except IOError:
     CHANGES = ''
 
 
-setup(name='dstoolbox',
-      version=version,
-      description='',
-      packages=find_packages(),
-      include_package_data=True,
-      zip_safe=False,
-      install_requires=install_requires,
-      extras_require={
-          'testing': tests_require,
-          'docs': docs_require,
-          },
-      entry_points={
-          },
-      )
+setup(
+    name='dstoolbox',
+    version=version,
+    description=(
+        'Tools that make working with scikit-learn and pandas easier.'),
+    author='Otto Group',
+    author_email='benjamin.bossan@ottogroup.com',
+    packages=find_packages(),
+    include_package_data=True,
+    url='https://github.com/ottogroup/dstoolbox',
+    download_url='https://github.com/ottogroup/dstoolbox/tarball/0.5',
+    zip_safe=False,
+    install_requires=install_requires,
+    extras_require={
+        'testing': tests_require,
+        'docs': docs_require,
+        },
+    entry_points={},
+    )
