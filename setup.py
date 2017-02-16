@@ -43,7 +43,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     url='https://github.com/ottogroup/dstoolbox',
-    download_url='https://github.com/ottogroup/dstoolbox/tarball/0.5',
+    download_url='https://github.com/ottogroup/dstoolbox/tarball/0.5.1',
     zip_safe=False,
     install_requires=install_requires,
     extras_require={
