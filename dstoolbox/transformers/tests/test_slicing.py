@@ -108,3 +108,50 @@ class TestItemSelector:
 
         with pytest.raises(ValueError):
             item_selector.fit_transform(X)
+
+    def test_force_2d_array_1d(self, item_selector_cls, X):
+        item_selector = item_selector_cls(key=1, force_2d=True)
+        result = item_selector.fit_transform(X)
+        expected = np.array(['a', 'b', 'c']).reshape(-1, 1)
+        assert np.array_equal(result, expected)
+
+    def test_force_2d_array_2d(self, item_selector_cls, X):
+        item_selector = item_selector_cls(key=[1, 3], force_2d=True)
+        result = item_selector.fit_transform(X)
+        expected = np.array([['a', 'b', 'c'],
+                             ['d', 'e', 'f']]).T
+        assert np.array_equal(result, expected)
+
+    def test_force_2d_array_3d(self, item_selector_cls):
+        item_selector = item_selector_cls(key=[1, 3], force_2d=True)
+        X = np.zeros((5, 5, 5))
+
+        with pytest.raises(ValueError) as exc:
+            item_selector.fit_transform(X)
+
+        assert str(exc.value) == "ItemSelector cannot force 2d on 3d data."
+
+    def test_force_2d_series(self, item_selector_cls, df):
+        item_selector = item_selector_cls('names', force_2d=True)
+        result = item_selector.fit_transform(df)
+        expected = np.array(
+            ['Alice', 'Bob', 'Charles', 'Dora', 'Eve']).reshape(-1, 1)
+        assert np.array_equal(result, expected)
+
+    def test_force_2d_df_1d(self, item_selector_cls, df):
+        item_selector = item_selector_cls(['names'], force_2d=True)
+        result = item_selector.fit_transform(df)
+        expected = np.array(
+            ['Alice', 'Bob', 'Charles', 'Dora', 'Eve']).reshape(-1, 1)
+        assert isinstance(result, np.ndarray)
+        assert np.array_equal(result, expected)
+
+    def test_force_2d_df_2d(self, item_selector_cls, df):
+        item_selector = item_selector_cls(['names', 'age'], force_2d=True)
+        result = item_selector.fit_transform(df)
+        expected = np.array([
+            ['Alice', 'Bob', 'Charles', 'Dora', 'Eve'],
+            [14., 30., 55., 7., 25.],
+        ], dtype=object).T
+        assert isinstance(result, np.ndarray)
+        assert np.array_equal(result, expected)
