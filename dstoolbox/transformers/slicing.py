@@ -1,5 +1,6 @@
 """Collection of transformers designed to index, slice, etc."""
 
+import numpy as np
 import pandas as pd
 
 from sklearn.base import BaseEstimator
@@ -7,19 +8,22 @@ from sklearn.base import TransformerMixin
 
 
 class ItemSelector(BaseEstimator, TransformerMixin):
-    """Return only the column specified by ``key``.
+    """Return only the columns specified by `key`.
 
     Parameters
     ----------
-    key : int, slice
+    key : (list of) int, str, slice
       Specifies the columns to return.
 
-    Returns
-    -------
-    X
+    force_2d : bool (default=False)
+      If true, forces output to be 2d; if output is already 2d,
+      nothing changes, if it has more dimensions, a `ValueError` is
+      raised.
+
     """
-    def __init__(self, key):
+    def __init__(self, key, force_2d=False):
         self.key = key
+        self.force_2d = force_2d
 
     # pylint: disable=attribute-defined-outside-init
     def _check_key(self):
@@ -66,10 +70,20 @@ class ItemSelector(BaseEstimator, TransformerMixin):
 
         """
         if isinstance(X, pd.DataFrame):
-            return X.ix[:, self.key]
+            Xt = X[self.key]
+            if self.force_2d:
+                Xt = Xt.values
         elif self.only_strings_ and not isinstance(X, pd.DataFrame):
             raise ValueError(
-                'List of strings as key works only with pd.DataFrame.'
+                'List of strings as keys works only with pd.DataFrame.'
             )
         else:
-            return X[:, self.key]
+            Xt = X[:, self.key]
+
+        ndim = Xt.ndim
+        if self.force_2d and (ndim == 1):
+            Xt = np.expand_dims(Xt, axis=1)
+        if self.force_2d and (ndim > 2):
+            raise ValueError("ItemSelector cannot force 2d on {}d data."
+                             "".format(ndim))
+        return Xt
