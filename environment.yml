@@ -1,0 +1,21 @@
+name: dstoolbox
+dependencies:
+- libgfortran=3.0.0=1
+- mkl=2017.0.1=0
+- numpy=1.12.0=py35_0
+- openssl=1.0.2k=1
+- pandas=0.19.2=np112py35_1
+- pip=9.0.1=py35_1
+- python=3.5.3=1
+- python-dateutil=2.6.0=py35_0
+- pytz=2016.10=py35_0
+- readline=6.2=2
+- scikit-learn=0.18.1=np112py35_1
+- scipy=0.18.1=np112py35_1
+- setuptools=27.2.0=py35_0
+- six=1.10.0=py35_0
+- sqlite=3.13.0=0
+- tk=8.5.18=0
+- wheel=0.29.0=py35_0
+- xz=5.2.2=1
+- zlib=1.2.8=3
