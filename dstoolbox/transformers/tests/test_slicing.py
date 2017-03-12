@@ -97,6 +97,30 @@ class TestItemSelector:
         assert_frame_equal(result.sort_index(axis=1),
                            expected.sort_index(axis=1))
 
+    def test_transform_df_callable(self, item_selector_cls, df):
+        item_selector = item_selector_cls(key=lambda x: x.endswith('names'))
+        expected = pd.DataFrame(data={
+            'names': ['Alice', 'Bob', 'Charles', 'Dora', 'Eve'],
+            'surnames': ['Carroll', 'Meister', 'Darwin', 'Explorer', 'Wally'],
+        })
+
+        result = item_selector.fit_transform(df)
+        assert_frame_equal(result.sort_index(axis=1),
+                           expected.sort_index(axis=1))
+
+    def test_transform_df_regex(self, item_selector_cls, df):
+        import re
+        pattern = re.compile(r'n*a')
+        item_selector = item_selector_cls(key=pattern.match)
+        expected = pd.DataFrame(data={
+            'names': ['Alice', 'Bob', 'Charles', 'Dora', 'Eve'],
+            'age': [14., 30., 55., 7., 25.],
+        })
+
+        result = item_selector.fit_transform(df)
+        assert_frame_equal(result.sort_index(axis=1),
+                           expected.sort_index(axis=1))
+
     def test_df_multiple_types_in_keys(self, item_selector_cls, df):
         item_selector = item_selector_cls(key=['names', 0])
 
