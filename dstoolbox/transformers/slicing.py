@@ -39,6 +39,10 @@ class ItemSelector(BaseEstimator, TransformerMixin):
 
     # pylint: disable=attribute-defined-outside-init
     def _check_key(self):
+        """Check if key satisfies one of the requirements, set
+        attributes to indicate which one.
+
+        """
         key = self.key
 
         self.is_callable_ = _is_callable_with_str(key)
