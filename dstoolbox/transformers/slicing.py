@@ -94,7 +94,9 @@ class ItemSelector(BaseEstimator, TransformerMixin):
 
         """
         key = self.key
-        if isinstance(X, pd.DataFrame):
+        if isinstance(X, dict):
+            Xt = X[key]
+        elif isinstance(X, pd.DataFrame):
             if self.is_callable_:
                 key = [col for col in X.columns if key(col)]
             Xt = X[key]
