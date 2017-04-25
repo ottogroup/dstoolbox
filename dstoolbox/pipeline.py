@@ -1,5 +1,6 @@
 """Extend sklearn's Pipeline and FeatureUnion."""
 
+import itertools
 from functools import wraps
 import time
 import types
@@ -306,6 +307,11 @@ class DataFrameFeatureUnion(FeatureUnion):
     copy: boolean, optional
         Set copy-Parameter of pandas concat-Function.
 
+    keep_original: bool (default=False)
+        If True, instead of only returning the transformed data,
+        concatenate them to the original data and return the
+        result.
+
     """
 
     def __init__(
@@ -315,6 +321,7 @@ class DataFrameFeatureUnion(FeatureUnion):
             transformer_weights=None,
             ignore_index=True,
             copy=True,
+            keep_original=False,
     ):
         super(DataFrameFeatureUnion, self).__init__(
             transformer_list=transformer_list,
@@ -323,6 +330,7 @@ class DataFrameFeatureUnion(FeatureUnion):
 
         self.ignore_index = ignore_index
         self.copy = copy
+        self.keep_original = keep_original
 
     def fit_transform(self, X, y=None, **fit_params):
         """Fit all transformers using X, transform the data and
@@ -353,9 +361,13 @@ class DataFrameFeatureUnion(FeatureUnion):
             return np.zeros((X.shape[0], 0))
 
         Xs, transformers = zip(*result)
+        if self.keep_original:
+            # pylint: disable=redefined-variable-type
+            Xs = list(itertools.chain([X], Xs))
         self._update_transformer_list(transformers)
 
         if any(sparse.issparse(f) for f in Xs):
+            # pylint: disable=redefined-variable-type
             Xs = sparse.hstack(Xs).tocsr()
         elif all(isinstance(f, (pd.DataFrame, pd.Series)) for f in Xs):
             if self.ignore_index:
