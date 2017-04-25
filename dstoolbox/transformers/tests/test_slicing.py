@@ -179,3 +179,21 @@ class TestItemSelector:
         ], dtype=object).T
         assert isinstance(result, np.ndarray)
         assert np.array_equal(result, expected)
+
+    def test_dict_input(self, item_selector_cls):
+        item_selector = item_selector_cls('a')
+        X = {'a': np.arange(10), 'b': np.arange(10, 20)}
+        expected = np.arange(10)
+
+        result = item_selector.fit_transform(X)
+        assert (result == expected).all()
+        assert result.shape == expected.shape
+
+    def test_dict_input_2d(self, item_selector_cls):
+        item_selector = item_selector_cls('a', force_2d=True)
+        X = {'a': np.arange(10), 'b': np.arange(10, 20)}
+        expected = np.expand_dims(np.arange(10), 1)
+
+        result = item_selector.fit_transform(X)
+        assert (result == expected).all()
+        assert result.shape == expected.shape
