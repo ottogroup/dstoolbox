@@ -111,8 +111,8 @@ def _get_last_node(step, prefix=''):
     if steps:
         found.update(_get_last_node(steps[-1], prefix=name))
     elif transformer_list:
-        for step in transformer_list:
-            found.update(_get_last_node(step, prefix=name))
+        for step_ in transformer_list:
+            found.update(_get_last_node(step_, prefix=name))
     else:
         found.add((name, est))
 

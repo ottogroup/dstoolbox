@@ -129,8 +129,7 @@ def sentenize(sentence):
     def replace(match):
         if match.group('EOS'):
             return match.group('EOS').strip() + EOS_TAG
-        else:
-            return match.group()
+        return match.group()
 
     replaced = PATTERN_RE.sub(replace, sentence)
     splits = replaced.split(EOS_TAG)

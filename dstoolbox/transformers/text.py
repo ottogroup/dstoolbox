@@ -76,8 +76,7 @@ class W2VTransformer(BaseEstimator, TransformerMixin):
                    if self.word2idx_.get(word) is not None]
         if indices:
             return self.aggr_func(syn0[indices], axis=0, keepdims=True)
-        else:
-            return np.zeros_like(syn0[0:1])
+        return np.zeros_like(syn0[0:1])
 
     # pylint: disable=attribute-defined-outside-init,unused-argument
     def fit(self, X=None, y=None):
