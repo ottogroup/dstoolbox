@@ -1,5 +1,6 @@
 """Tests for pipeline.py."""
 
+from functools import partial
 import json
 import pickle
 import time
@@ -545,6 +546,36 @@ class TestDataFrameFeatureUnion:
         feat_result = feat_union.transform(X_sparse)
 
         assert (df_feat_result != feat_result).nnz == 0
+
+    def test_keep_original_df(
+            self, df_feature_union_cls, item_selector_cls, df, expected):
+        df_feat_union = df_feature_union_cls([
+            ('double_age', Pipeline([
+                ('select_age', item_selector_cls('age', force_2d=True)),
+                ('double', FunctionTransformer(
+                    lambda x: 2 * x, validate=False)),
+                ('to_df', FunctionTransformer(
+                    partial(pd.DataFrame, columns=['double_age']))),
+            ])),
+        ], keep_original=True)
+        expected['double_age'] = 2 * expected['age']
+
+        result = df_feat_union.fit_transform(df)
+        assert result.equals(expected)
+
+    def test_keep_original_ndarray(
+            self, df_feature_union_cls, item_selector_cls, df, expected):
+        df_feat_union = df_feature_union_cls([
+            ('double_age', Pipeline([
+                ('select_age', item_selector_cls('age', force_2d=True)),
+                ('double', FunctionTransformer(
+                    lambda x: 2 * x, validate=False)),
+            ])),
+        ], keep_original=True)
+        expected['double_age'] = 2 * expected['age']
+
+        result = df_feat_union.fit_transform(df)
+        assert (result == expected.values).all()
 
 
 class TestTimedPipeline:
