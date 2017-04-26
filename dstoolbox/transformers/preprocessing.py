@@ -85,7 +85,8 @@ class XLabelEncoder(BaseEstimator, TransformerMixin):
         Xt = np.array([self.classes_dict_.get(x, 0) for x in X.flatten()])
         return Xt.reshape(-1, 1)
 
-    def fit_transform(self, X, y=None):  # pylint: disable=unused-argument
+    # pylint: disable=unused-argument
+    def fit_transform(self, X, y=None, **fit_params):
         """Fit labels and transform to normalized encodings.
 
         Parameters
@@ -102,7 +103,7 @@ class XLabelEncoder(BaseEstimator, TransformerMixin):
             Target values.
 
         """
-        return self.fit(X).transform(X)
+        return self.fit(X, y, **fit_params).transform(X)
 
 
 class ParallelFunctionTransformer(BaseEstimator, TransformerMixin):

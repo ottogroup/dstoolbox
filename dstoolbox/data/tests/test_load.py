@@ -39,8 +39,7 @@ class TestLoadW2VData:
             nrows = kwargs.get('nrows')
             if nrows is 1:
                 return mock_w2v_header
-            else:
-                return mock_w2v_file
+            return mock_w2v_file
 
         import dstoolbox.data
         monkeypatch.setattr(

@@ -77,7 +77,7 @@ class PipelineY(Pipeline):
         """
         return self.y_transformer.inverse_transform(yt)
 
-    def fit(self, X, y, **fit_params):
+    def fit(self, X, y=None, **fit_params):
         """Fit all the transforms one after the other and transform the
         data, then fit the transformed data using the final estimator. Target
         values are tranformed before being passed to original fit method.
@@ -96,7 +96,7 @@ class PipelineY(Pipeline):
         yt = self.y_transform(y)
         return super().fit(X, yt, **fit_params)
 
-    def fit_transform(self, X, y, **fit_params):
+    def fit_transform(self, X, y=None, **fit_params):
         """Fit all the transforms one after the other and transform
         the data, then use fit_transform on transformed data using the
         final estimator. Target values are tranformed before being
@@ -188,10 +188,9 @@ class SliceMixin(object):
 
         if isinstance(idx, str):
             return dict(container)[idx]
-        elif isinstance(idx, slice):
+        if isinstance(idx, slice):
             return container[idx]
-        else:
-            return container[idx][1]
+        return container[idx][1]
 
 
 class DictFeatureUnion(FeatureUnion):
@@ -360,7 +359,6 @@ class DataFrameFeatureUnion(FeatureUnion):
         elif all(isinstance(f, (pd.DataFrame, pd.Series)) for f in Xs):
             if self.ignore_index:
                 Xs = [f.reset_index(drop=True) for f in Xs]
-            # pylint: disable=redefined-variable-type
             Xs = pd.concat(Xs, axis=1, copy=self.copy)
         else:
             Xs = np.hstack(Xs)
@@ -393,7 +391,6 @@ class DataFrameFeatureUnion(FeatureUnion):
             return np.zeros((X.shape[0], 0))
 
         if any(sparse.issparse(f) for f in Xs):
-            # pylint: disable=redefined-variable-type
             Xs = sparse.hstack(Xs).tocsr()
         elif all(isinstance(f, (pd.DataFrame, pd.Series)) for f in Xs):
             if self.ignore_index:
@@ -547,6 +544,8 @@ class TimedPipeline(Pipeline):
         """
         self.steps = _add_timed_sequence(self.steps, self.sink)
 
+    # note: sklearn's transform method is currently a property
+    # pylint: disable=arguments-differ
     def transform(self, *args, **kwargs):
         self.sink(self.header)
         super().transform(*args, **kwargs)
