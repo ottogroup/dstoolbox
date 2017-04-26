@@ -361,12 +361,10 @@ class DataFrameFeatureUnion(FeatureUnion):
 
         Xs, transformers = zip(*result)
         if self.keep_original:
-            # pylint: disable=redefined-variable-type
             Xs = list(itertools.chain([X], Xs))
         self._update_transformer_list(transformers)
 
         if any(sparse.issparse(f) for f in Xs):
-            # pylint: disable=redefined-variable-type
             Xs = sparse.hstack(Xs).tocsr()
         elif all(isinstance(f, (pd.DataFrame, pd.Series)) for f in Xs):
             if self.ignore_index:
