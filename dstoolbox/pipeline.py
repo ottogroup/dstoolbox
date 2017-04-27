@@ -480,13 +480,16 @@ def _add_timed_sequence(steps, sink):
                     'predict_proba')
     for name, step in seq:
         for method_name in method_names:
-            if not hasattr(step, method_name):
+            old_func = getattr(step, method_name, None)
+            if not old_func:
                 continue
 
             new_func = timing_decorator(step, name, method_name, sink)
+            if method_name == 'transform' and name == 'clf':
+                import pdb; pdb.set_trace()
             setattr(
                 step,
-                method_name,
+                new_func.__name__,
                 types.MethodType(new_func, step),
             )
     return seq
@@ -503,7 +506,7 @@ def _shed_timed_sequence(steps):
 
             decorated = getattr(step, method_name)
             meth = decorated.__closure__[0].cell_contents
-            setattr(step, method_name, meth)
+            setattr(step, meth.__name__, meth)
 
 
 class TimedPipeline(Pipeline):
@@ -557,5 +560,4 @@ class TimedPipeline(Pipeline):
     # note: sklearn's transform method is currently a property
     # pylint: disable=arguments-differ
     def transform(self, *args, **kwargs):
-        self.sink(self.header)
         super().transform(*args, **kwargs)

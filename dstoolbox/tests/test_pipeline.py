@@ -781,3 +781,14 @@ class TestTimedPipeline:
         assert lines[4] == expected[1]
         assert lines[7] == expected[2]
         assert lines[8] == expected[3]
+
+    def test_with_pipeline(self, timed_pipeline_cls, data, steps):
+        # Currently, sklearn's Pipeline.transform is a property!
+        X, y = data
+        timed_pipeline = timed_pipeline_cls([
+            ('step0', Pipeline(steps))
+        ])
+        timed_pipeline.fit(X, y)
+        timed_pipeline.transform(X)
+        timed_pipeline.shed_timing()
+        timed_pipeline.transform(X)
