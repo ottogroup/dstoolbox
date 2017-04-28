@@ -470,6 +470,8 @@ def timing_decorator(
 
         sink("{" + out + "}")
         return result
+    # pylint: disable=protected-access
+    wrapper._has_timing = True
     return wrapper
 
 
@@ -481,12 +483,11 @@ def _add_timed_sequence(steps, sink):
     for name, step in seq:
         for method_name in method_names:
             old_func = getattr(step, method_name, None)
-            if not old_func:
+            # pylint: disable=protected-access
+            if not old_func or hasattr(old_func, '_has_timing'):
                 continue
 
             new_func = timing_decorator(step, name, method_name, sink)
-            if method_name == 'transform' and name == 'clf':
-                import pdb; pdb.set_trace()
             setattr(
                 step,
                 new_func.__name__,
@@ -505,8 +506,10 @@ def _shed_timed_sequence(steps):
                 continue
 
             decorated = getattr(step, method_name)
-            meth = decorated.__closure__[0].cell_contents
-            setattr(step, meth.__name__, meth)
+            closure = decorated.__closure__
+            if closure:
+                meth = closure[0].cell_contents
+                setattr(step, meth.__name__, meth)
 
 
 class TimedPipeline(Pipeline):
@@ -556,8 +559,3 @@ class TimedPipeline(Pipeline):
 
         """
         self.steps = _add_timed_sequence(self.steps, self.sink)
-
-    # note: sklearn's transform method is currently a property
-    # pylint: disable=arguments-differ
-    def transform(self, *args, **kwargs):
-        super().transform(*args, **kwargs)
