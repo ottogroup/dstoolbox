@@ -400,6 +400,9 @@ class DataFrameFeatureUnion(FeatureUnion):
             # All transformers are None
             return np.zeros((X.shape[0], 0))
 
+        if self.keep_original:
+            Xs = list(itertools.chain([X], Xs))
+
         if any(sparse.issparse(f) for f in Xs):
             Xs = sparse.hstack(Xs).tocsr()
         elif all(isinstance(f, (pd.DataFrame, pd.Series)) for f in Xs):

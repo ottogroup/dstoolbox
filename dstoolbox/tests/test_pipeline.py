@@ -577,6 +577,22 @@ class TestDataFrameFeatureUnion:
         result = df_feat_union.fit_transform(df)
         assert (result == expected.values).all()
 
+    def test_keep_original_df_transform(
+            self, df_feature_union_cls, item_selector_cls, df, expected):
+        df_feat_union = df_feature_union_cls([
+            ('double_age', Pipeline([
+                ('select_age', item_selector_cls('age', force_2d=True)),
+                ('double', FunctionTransformer(
+                    lambda x: 2 * x, validate=False)),
+                ('to_df', FunctionTransformer(
+                    partial(pd.DataFrame, columns=['double_age']))),
+            ])),
+        ], keep_original=True)
+        expected['double_age'] = 2 * expected['age']
+
+        result = df_feat_union.fit(df).transform(df)
+        assert result.equals(expected)
+
 
 class TestTimedPipeline:
     def split_line(self, line):
