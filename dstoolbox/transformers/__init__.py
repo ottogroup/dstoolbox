@@ -13,6 +13,7 @@ from dstoolbox.transformers.slicing import ItemSelector
 """
 from dstoolbox.pipeline import DataFrameFeatureUnion
 from dstoolbox.pipeline import PipelineY
+from dstoolbox.transformers.casting import ToDataFrame
 from dstoolbox.transformers.preprocessing import ParallelFunctionTransformer
 from dstoolbox.transformers.preprocessing import XLabelEncoder
 from dstoolbox.transformers.slicing import ItemSelector
@@ -23,5 +24,6 @@ __all__ = [
     'ItemSelector',
     'ParallelFunctionTransformer',
     'PipelineY',
+    'ToDataFrame',
     'XLabelEncoder',
 ]
