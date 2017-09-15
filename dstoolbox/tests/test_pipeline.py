@@ -41,11 +41,16 @@ class TestPipelineY:
         y = np.array(['F', 'M', 'M', 'F', 'F'])
         return y
 
-    @pytest.fixture
-    def pipeline(self, pipeliney_cls, X, y):
+    @pytest.fixture(params=[{'memory': False}, {'memory': True}])
+    def pipeline(self, pipeliney_cls, X, y, request, tmpdir):
+        if request.param['memory']:
+            memory = str(tmpdir.mkdir('dstoolbox').join('memory'))
+        else:
+            memory = None
         pipeline = pipeliney_cls(
             steps=[('count', CountVectorizer(analyzer='char')),
                    ('clf', BernoulliNB())],
+            memory=memory,
             y_transformer=LabelEncoder(),
         )
         return pipeline.fit(X, y)
@@ -640,8 +645,10 @@ class TestTimedPipeline:
 
     @pytest.fixture
     def steps(self):
-        eps = 5e-4
-        msf = self.make_slow_function
+        clf = LogisticRegression()
+        # add a mock transform method so that we can call
+        # fit_transform on pipeline
+        clf.transform = clf.predict
         steps = [
             ('sleep_0023', FunctionTransformer(_slow23)),
             ('sleep_0055', FunctionTransformer(_slow55)),
@@ -649,10 +656,14 @@ class TestTimedPipeline:
         ]
         return steps
 
-    @pytest.fixture
-    def timed_pipeline(self, timed_pipeline_cls, steps):
+    @pytest.fixture(params=[{'memory': False}, {'memory': False}])
+    def timed_pipeline(self, timed_pipeline_cls, steps, request, tmpdir):
+        if request.param['memory']:
+            memory = str(tmpdir.mkdir('dstoolbox').join('memory'))
+        else:
+            memory = None
         sink = Mock()
-        timed_pipeline = timed_pipeline_cls(steps, sink=sink)
+        timed_pipeline = timed_pipeline_cls(steps, sink=sink, memory=memory)
         return timed_pipeline
 
     @pytest.fixture
