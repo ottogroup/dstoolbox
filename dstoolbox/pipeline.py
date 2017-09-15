@@ -28,6 +28,17 @@ class PipelineY(Pipeline):
         chained, in the order in which they are chained, with the last object
         an estimator.
 
+    memory : Instance of sklearn.external.joblib.Memory or string, optional \
+            (default=None)
+        Used to cache the fitted transformers of the pipeline. By
+        default, no caching is performed. If a string is given, it is
+        the path to the caching directory. Enabling caching triggers a
+        clone of the transformers before fitting. Therefore, the
+        transformer instance given to the pipeline cannot be inspected
+        directly. Use the attribute ``named_steps`` or ``steps`` to
+        inspect estimators within the pipeline. Caching the
+        transformers is advantageous when fitting is time consuming.
+
     y_transformer : transformer object
         Transformer object that transforms the y values (e.g.,
         discretiziation). May optionally support inverse_transform
@@ -204,6 +215,19 @@ class DictFeatureUnion(FeatureUnion):
 
     DictFeatureUnions can be nested.
 
+    Parameters
+    ----------
+    transformer_list : list of (string, transformer) tuples
+        List of transformer objects to be applied to the data. The first
+        half of each tuple is the name of the transformer.
+
+    n_jobs : int, optional
+        Number of jobs to run in parallel (default 1).
+
+    transformer_weights : dict, optional
+        Multiplicative weights for features per transformer.
+        Keys are transformer names, values the weights.
+
     """
 
     def _update_transformed_dict(self, Xs):
@@ -239,9 +263,9 @@ class DictFeatureUnion(FeatureUnion):
         """
         self._validate_transformers()
         result = Parallel(n_jobs=self.n_jobs)(
-            delayed(_fit_transform_one)(trans, name, weight, X, y,
+            delayed(_fit_transform_one)(trans, weight, X, y,
                                         **fit_params)
-            for name, trans, weight in self._iter())
+            for _, trans, weight in self._iter())
 
         if not result:
             # All transformers are None
@@ -270,7 +294,7 @@ class DictFeatureUnion(FeatureUnion):
 
         """
         Xs = Parallel(n_jobs=self.n_jobs)(
-            delayed(_transform_one)(trans, name, weight, X)
+            delayed(_transform_one)(trans, weight, X)
             for name, trans, weight in self._iter())
 
         if not Xs:
@@ -351,9 +375,9 @@ class DataFrameFeatureUnion(FeatureUnion):
         """
         self._validate_transformers()
         result = Parallel(n_jobs=self.n_jobs)(
-            delayed(_fit_transform_one)(trans, name, weight, X, y,
+            delayed(_fit_transform_one)(trans, weight, X, y,
                                         **fit_params)
-            for name, trans, weight in self._iter())
+            for _, trans, weight in self._iter())
 
         if not result:
             # All transformers are None
@@ -393,8 +417,8 @@ class DataFrameFeatureUnion(FeatureUnion):
 
         """
         Xs = Parallel(n_jobs=self.n_jobs)(
-            delayed(_transform_one)(trans, name, weight, X)
-            for name, trans, weight in self._iter())
+            delayed(_transform_one)(trans, weight, X)
+            for _, trans, weight in self._iter())
 
         if not Xs:
             # All transformers are None
@@ -529,6 +553,17 @@ class TimedPipeline(Pipeline):
         chained, in the order in which they are chained, with the last object
         an estimator.
 
+    memory : Instance of sklearn.external.joblib.Memory or string, optional \
+            (default=None)
+        Used to cache the fitted transformers of the pipeline. By
+        default, no caching is performed. If a string is given, it is
+        the path to the caching directory. Enabling caching triggers a
+        clone of the transformers before fitting. Therefore, the
+        transformer instance given to the pipeline cannot be inspected
+        directly. Use the attribute ``named_steps`` or ``steps`` to
+        inspect estimators within the pipeline. Caching the
+        transformers is advantageous when fitting is time consuming.
+
     sink : callable (default=print)
         The target where the string messages are sent to. Is print by
         default but could, for example, be switched to a logger.
@@ -541,10 +576,11 @@ class TimedPipeline(Pipeline):
 
     """
 
-    def __init__(self, steps, sink=print):
+    def __init__(self, steps, memory=None, sink=print):
         # pylint: disable=super-init-not-called
         self.steps = _add_timed_sequence(steps, sink)
         self.sink = sink
+        self.memory = memory
 
         self._validate_steps()
 

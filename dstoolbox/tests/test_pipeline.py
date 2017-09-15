@@ -41,11 +41,17 @@ class TestPipelineY:
         y = np.array(['F', 'M', 'M', 'F', 'F'])
         return y
 
-    @pytest.fixture
-    def pipeline(self, pipeliney_cls, X, y):
+    @pytest.fixture(params=[{'memory': False}, {'memory': True}])
+    def pipeline(self, pipeliney_cls, X, y, request, tmpdir):
+        """Pipeline, once with and once without memory."""
+        if request.param['memory']:
+            memory = str(tmpdir.mkdir('dstoolbox').join('memory'))
+        else:
+            memory = None
         pipeline = pipeliney_cls(
             steps=[('count', CountVectorizer(analyzer='char')),
                    ('clf', BernoulliNB())],
+            memory=memory,
             y_transformer=LabelEncoder(),
         )
         return pipeline.fit(X, y)
@@ -283,9 +289,21 @@ class TestDictFeatureUnion:
 
         return DictFeatureUnion
 
-    @pytest.fixture
-    def dict_feature_union(self, dict_feature_union_cls, transformer_list):
-        union = dict_feature_union_cls(transformer_list)
+    @pytest.fixture(params=[
+        {'transformer_weights': None},
+        {'transformer_weights': {'scaler': 1, 'polynomialfeatures': 1.5}},
+    ])
+    def dict_feature_union(
+            self,
+            dict_feature_union_cls,
+            transformer_list,
+            request,
+    ):
+        transformer_weights = request.param
+        union = dict_feature_union_cls(
+            transformer_list,
+            transformer_weights=transformer_weights,
+        )
         return union
 
     @pytest.fixture
@@ -380,6 +398,24 @@ class TestDataFrameFeatureUnion:
                 ('select-df-1', item_selector_cls(['surnames'])),
                 ('select-df-2', item_selector_cls(['age'])),
             ], ignore_index=True, copy=False)
+
+        result = feat_union.fit_transform(df)
+        assert_frame_equal(result.sort_index(axis=1),
+                           expected.sort_index(axis=1))
+
+    def test_two_dataframes_with_transformer_weights(
+            self, item_selector_cls, df_feature_union_cls, df, expected):
+        transformer_weights = {'select-df-1': 1, 'select-df-2': 2}
+        feat_union = df_feature_union_cls(
+            transformer_list=[
+                ('select-df-1', item_selector_cls(['surnames'])),
+                ('select-df-2', item_selector_cls(['age'])),
+            ],
+            transformer_weights=transformer_weights,
+            ignore_index=True,
+            copy=False,
+        )
+        expected['age'] = 2 * expected['age']
 
         result = feat_union.fit_transform(df)
         assert_frame_equal(result.sort_index(axis=1),
@@ -594,6 +630,16 @@ class TestDataFrameFeatureUnion:
         assert result.equals(expected)
 
 
+def _slow23(X):
+    time.sleep(0.023 - 5e-4)
+    return X
+
+
+def _slow55(X):
+    time.sleep(0.055 - 5e-4)
+    return X
+
+
 class TestTimedPipeline:
     def split_line(self, line):
         line = line.strip('{}')
@@ -623,12 +669,6 @@ class TestTimedPipeline:
             assert dct0[key] == dct1[key]
         assert np.isclose(dct0['duration'], dct1['duration'], atol=0.02)
 
-    def make_slow_function(self, sleep_time):
-        def slow_func(X):
-            time.sleep(sleep_time)
-            return X
-        return slow_func
-
     @pytest.fixture
     def timed_pipeline_cls(self):
         from dstoolbox.pipeline import TimedPipeline
@@ -636,19 +676,26 @@ class TestTimedPipeline:
 
     @pytest.fixture
     def steps(self):
-        eps = 5e-4
-        msf = self.make_slow_function
+        """Pipeline steps with 2 transformers and 1 classifier."""
+        clf = LogisticRegression()
+        # add a mock transform method so that we can call
+        # fit_transform on pipeline
+        clf.transform = clf.predict
         steps = [
-            ('sleep_023', FunctionTransformer(msf(0.023 - eps))),
-            ('sleep_055', FunctionTransformer(msf(0.055 - eps))),
-            ('clf', LogisticRegression()),
+            ('sleep_0023', FunctionTransformer(_slow23)),
+            ('sleep_0055', FunctionTransformer(_slow55)),
+            ('clf', clf),
         ]
         return steps
 
-    @pytest.fixture
-    def timed_pipeline(self, timed_pipeline_cls, steps):
+    @pytest.fixture(params=[{'memory': False}, {'memory': False}])
+    def timed_pipeline(self, timed_pipeline_cls, steps, request, tmpdir):
+        if request.param['memory']:
+            memory = str(tmpdir.mkdir('dstoolbox').join('memory'))
+        else:
+            memory = None
         sink = Mock()
-        timed_pipeline = timed_pipeline_cls(steps, sink=sink)
+        timed_pipeline = timed_pipeline_cls(steps, sink=sink, memory=memory)
         return timed_pipeline
 
     @pytest.fixture
@@ -658,10 +705,10 @@ class TestTimedPipeline:
     @pytest.fixture
     def expected(self):
         return [(
-            '{"name": "sleep_023"                   , "method": "transform"   '
+            '{"name": "sleep_0023"                  , "method": "transform"   '
             '      , "duration":        0.023, "shape": "100x20"}'
         ), (
-            '{"name": "sleep_055"                   , "method": "transform"   '
+            '{"name": "sleep_0055"                  , "method": "transform"   '
             '      , "duration":        0.055, "shape": "100x20"}'
         )] * 2
 
@@ -719,16 +766,16 @@ class TestTimedPipeline:
         assert len(lines) == 3 + 3 + 1 + 1 + 1 + 1
         self.assert_lines_correct_form(lines)
         self.assert_lines_same_output(lines[1], (
-            '{"name": "sleep_023"                   , "method": "transform"   '
+            '{"name": "sleep_0023"                  , "method": "transform"   '
             '      , "duration":        0.023, "shape": "50x5"}'))
         self.assert_lines_same_output(lines[4], (
-            '{"name": "sleep_055"                   , "method": "transform"   '
+            '{"name": "sleep_0055"                  , "method": "transform"   '
             '      , "duration":        0.055, "shape": "50x5"}'))
         self.assert_lines_same_output(lines[7], (
-            '{"name": "sleep_023"                   , "method": "transform"   '
+            '{"name": "sleep_0023"                  , "method": "transform"   '
             '      , "duration":        0.023, "shape": "75x5"}'))
         self.assert_lines_same_output(lines[8], (
-            '{"name": "sleep_055"                   , "method": "transform"   '
+            '{"name": "sleep_0055"                  , "method": "transform"   '
             '      , "duration":        0.055, "shape": "75x5"}'))
 
     def test_very_long_name(self, timed_pipeline_cls, steps, data, expected):
