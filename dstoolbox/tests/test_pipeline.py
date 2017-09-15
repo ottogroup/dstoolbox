@@ -43,6 +43,7 @@ class TestPipelineY:
 
     @pytest.fixture(params=[{'memory': False}, {'memory': True}])
     def pipeline(self, pipeliney_cls, X, y, request, tmpdir):
+        """Pipeline, once with and once without memory."""
         if request.param['memory']:
             memory = str(tmpdir.mkdir('dstoolbox').join('memory'))
         else:
@@ -645,6 +646,7 @@ class TestTimedPipeline:
 
     @pytest.fixture
     def steps(self):
+        """Pipeline steps with 2 transformers and 1 classifier."""
         clf = LogisticRegression()
         # add a mock transform method so that we can call
         # fit_transform on pipeline
