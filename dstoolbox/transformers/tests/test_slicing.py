@@ -76,16 +76,6 @@ class TestItemSelector:
         result = transformer.fit(X, y)
         assert result is transformer
 
-    def test_transform_df_ints(self, item_selector_cls, df):
-        item_selector = item_selector_cls(key=[0, 1])
-        expected = pd.DataFrame(data={
-            'names': ['Alice', 'Bob', 'Charles', 'Dora', 'Eve'],
-            'age': [14., 30., 55., 7., 25.],
-        })
-
-        result = item_selector.fit_transform(df)
-        assert_frame_equal(result, expected)
-
     def test_transform_df_strings(self, item_selector_cls, df):
         item_selector = item_selector_cls(key=['names', 'age'])
         expected = pd.DataFrame(data={
