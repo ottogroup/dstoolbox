@@ -289,9 +289,21 @@ class TestDictFeatureUnion:
 
         return DictFeatureUnion
 
-    @pytest.fixture
-    def dict_feature_union(self, dict_feature_union_cls, transformer_list):
-        union = dict_feature_union_cls(transformer_list)
+    @pytest.fixture(params=[
+        {'transformer_weights': None},
+        {'transformer_weights': {'scaler': 1, 'polynomialfeatures': 1.5}},
+    ])
+    def dict_feature_union(
+            self,
+            dict_feature_union_cls,
+            transformer_list,
+            request,
+    ):
+        transformer_weights = request.param
+        union = dict_feature_union_cls(
+            transformer_list,
+            transformer_weights=transformer_weights,
+        )
         return union
 
     @pytest.fixture
@@ -386,6 +398,24 @@ class TestDataFrameFeatureUnion:
                 ('select-df-1', item_selector_cls(['surnames'])),
                 ('select-df-2', item_selector_cls(['age'])),
             ], ignore_index=True, copy=False)
+
+        result = feat_union.fit_transform(df)
+        assert_frame_equal(result.sort_index(axis=1),
+                           expected.sort_index(axis=1))
+
+    def test_two_dataframes_with_transformer_weights(
+            self, item_selector_cls, df_feature_union_cls, df, expected):
+        transformer_weights = {'select-df-1': 1, 'select-df-2': 2}
+        feat_union = df_feature_union_cls(
+            transformer_list=[
+                ('select-df-1', item_selector_cls(['surnames'])),
+                ('select-df-2', item_selector_cls(['age'])),
+            ],
+            transformer_weights=transformer_weights,
+            ignore_index=True,
+            copy=False,
+        )
+        expected['age'] = 2 * expected['age']
 
         result = feat_union.fit_transform(df)
         assert_frame_equal(result.sort_index(axis=1),
