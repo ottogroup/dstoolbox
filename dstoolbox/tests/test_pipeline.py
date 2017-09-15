@@ -594,6 +594,16 @@ class TestDataFrameFeatureUnion:
         assert result.equals(expected)
 
 
+def _slow23(X):
+    time.sleep(0.023 - 5e-4)
+    return X
+
+
+def _slow55(X):
+    time.sleep(0.055 - 5e-4)
+    return X
+
+
 class TestTimedPipeline:
     def split_line(self, line):
         line = line.strip('{}')
@@ -623,12 +633,6 @@ class TestTimedPipeline:
             assert dct0[key] == dct1[key]
         assert np.isclose(dct0['duration'], dct1['duration'], atol=0.02)
 
-    def make_slow_function(self, sleep_time):
-        def slow_func(X):
-            time.sleep(sleep_time)
-            return X
-        return slow_func
-
     @pytest.fixture
     def timed_pipeline_cls(self):
         from dstoolbox.pipeline import TimedPipeline
@@ -639,9 +643,9 @@ class TestTimedPipeline:
         eps = 5e-4
         msf = self.make_slow_function
         steps = [
-            ('sleep_023', FunctionTransformer(msf(0.023 - eps))),
-            ('sleep_055', FunctionTransformer(msf(0.055 - eps))),
-            ('clf', LogisticRegression()),
+            ('sleep_0023', FunctionTransformer(_slow23)),
+            ('sleep_0055', FunctionTransformer(_slow55)),
+            ('clf', clf),
         ]
         return steps
 
@@ -658,10 +662,10 @@ class TestTimedPipeline:
     @pytest.fixture
     def expected(self):
         return [(
-            '{"name": "sleep_023"                   , "method": "transform"   '
+            '{"name": "sleep_0023"                  , "method": "transform"   '
             '      , "duration":        0.023, "shape": "100x20"}'
         ), (
-            '{"name": "sleep_055"                   , "method": "transform"   '
+            '{"name": "sleep_0055"                  , "method": "transform"   '
             '      , "duration":        0.055, "shape": "100x20"}'
         )] * 2
 
@@ -719,16 +723,16 @@ class TestTimedPipeline:
         assert len(lines) == 3 + 3 + 1 + 1 + 1 + 1
         self.assert_lines_correct_form(lines)
         self.assert_lines_same_output(lines[1], (
-            '{"name": "sleep_023"                   , "method": "transform"   '
+            '{"name": "sleep_0023"                  , "method": "transform"   '
             '      , "duration":        0.023, "shape": "50x5"}'))
         self.assert_lines_same_output(lines[4], (
-            '{"name": "sleep_055"                   , "method": "transform"   '
+            '{"name": "sleep_0055"                  , "method": "transform"   '
             '      , "duration":        0.055, "shape": "50x5"}'))
         self.assert_lines_same_output(lines[7], (
-            '{"name": "sleep_023"                   , "method": "transform"   '
+            '{"name": "sleep_0023"                  , "method": "transform"   '
             '      , "duration":        0.023, "shape": "75x5"}'))
         self.assert_lines_same_output(lines[8], (
-            '{"name": "sleep_055"                   , "method": "transform"   '
+            '{"name": "sleep_0055"                  , "method": "transform"   '
             '      , "duration":        0.055, "shape": "75x5"}'))
 
     def test_very_long_name(self, timed_pipeline_cls, steps, data, expected):
