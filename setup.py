@@ -23,7 +23,7 @@ docs_require = [
 
 here = os.path.abspath(os.path.dirname(__file__))
 try:
-    README = open(os.path.join(here, 'README.md')).read()
+    README = open(os.path.join(here, 'README.rst')).read()
 except IOError:
     README = ''
 
