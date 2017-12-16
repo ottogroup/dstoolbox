@@ -134,6 +134,12 @@ class TestTextFeaturizer:
                     "not of type <class 'int'>.")
         assert exc.value.args[0] == expected
 
+    def test_binary_true_raises(self, featurizer_cls):
+        with pytest.raises(ValueError) as exc:
+            featurizer_cls(binary=True)
+        expected = "binary=True does not work with TextFeaturizer."
+        assert exc.value.args[0] == expected
+
     @pytest.fixture
     def padder(self):
         from dstoolbox.transformers import Padder2d
