@@ -1,12 +1,13 @@
 """Tests for transformers.casting.py."""
 
-from dstoolbox.pipeline import DictFeatureUnion
-from dstoolbox.transformers import ItemSelector
 import numpy as np
 import pandas as pd
 import pytest
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
+
+from dstoolbox.pipeline import DictFeatureUnion
+from dstoolbox.transformers import ItemSelector
 
 
 class TestToDataFrame:

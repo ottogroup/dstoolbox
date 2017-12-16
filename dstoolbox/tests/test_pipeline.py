@@ -289,6 +289,7 @@ class TestDictFeatureUnion:
 
         return DictFeatureUnion
 
+    # pylint: disable=missing-docstring
     @pytest.fixture(params=[
         {'transformer_weights': None},
         {'transformer_weights': {'scaler': 1, 'polynomialfeatures': 1.5}},
@@ -363,6 +364,7 @@ class TestDataFrameFeatureUnion:
         from dstoolbox.pipeline import DataFrameFeatureUnion
         return DataFrameFeatureUnion
 
+    # pylint: disable=missing-docstring
     @pytest.fixture
     def df(self):
         df = pd.DataFrame(
@@ -646,6 +648,7 @@ class TestTimedPipeline:
         parts = line.split(',')
         return [part.strip() for part in parts]
 
+    # pylint: disable=missing-docstring
     def assert_lines_correct_form(self, lines):
         for line in lines:
             assert line.startswith('{')
