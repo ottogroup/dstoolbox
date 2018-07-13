@@ -50,5 +50,6 @@ setup(
         'testing': tests_require,
         'docs': docs_require,
         },
+    setup_requires=["setuptools_git >= 0.3"],
     entry_points={},
     )

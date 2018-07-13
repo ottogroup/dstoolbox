@@ -18,6 +18,13 @@ install:
   - travis_wait travis_retry pip install -r requirements-dev.txt
   - travis_retry python setup.py develop
 script: py.test && pylint dstoolbox
+deploy:
+  - provider: script
+    script: pypi_upload.sh
+    skip_cleanup: true
+    on:
+      repo: ottogroup/dstoolbox
+      tags: true
 cache:
   - apt
   - directories:
