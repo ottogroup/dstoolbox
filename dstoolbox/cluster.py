@@ -36,9 +36,10 @@ def hierarchical_clustering(
       scipy.cluster.hierarchy.fcluster documentation.
 
     """
+    # pylint: disable=len-as-condition
     if len(X) < 1:
         return np.array([])
-    elif len(X) == 1:
+    if len(X) == 1:
         return np.array([0])
 
     labels = fcluster(
