@@ -179,7 +179,7 @@ class PipelineY(Pipeline):
         return out
 
 
-class SliceMixin(object):
+class SliceMixin:
     """Allows more comfortable access to steps of Pipeline or
     FeatureUnion.
 
