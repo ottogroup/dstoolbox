@@ -93,7 +93,8 @@ class ToDataFrame(BaseEstimator, TransformerMixin):
         if any(shape for shape in shapes if len(shape) == 2 and shape[1] != 1):
             raise ValueError("dict values must be 1d arrays.")
 
-        return pd.DataFrame({k: np.squeeze(v) for k, v in X.items()})
+        df = pd.DataFrame({k: np.squeeze(v) for k, v in X.items()})
+        return df[[c for c in sorted(df)]]
 
     def transform(self, X):
         """Transform incoming data to a pandas DataFrame.
