@@ -17,7 +17,7 @@ install:
 script: py.test && pylint dstoolbox
 deploy:
   - provider: script
-    script: pypi_upload.sh
+    script: ./pypi_upload.sh
     skip_cleanup: true
     on:
       repo: ottogroup/dstoolbox
