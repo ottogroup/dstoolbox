@@ -56,11 +56,11 @@ class PipelineY(Pipeline):
 
     """
     def __init__(
-        self,
-        steps,
-        y_transformer,
-        predict_use_inverse=False,
-        **kwargs
+            self,
+            steps,
+            y_transformer,
+            predict_use_inverse=False,
+            **kwargs
     ):
         self.y_transformer = y_transformer
         self.predict_use_inverse = predict_use_inverse
