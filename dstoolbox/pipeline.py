@@ -44,6 +44,10 @@ class PipelineY(Pipeline):
         discretiziation). May optionally support inverse_transform
         method.
 
+    predict_use_inverse : bool (default=False)
+        Determine if ``predict`` should use the inverse transform of
+        y_transformer on the output.
+
     Attributes
     ----------
     named_steps : dict
@@ -51,8 +55,15 @@ class PipelineY(Pipeline):
         Keys are step names and values are steps parameters.
 
     """
-    def __init__(self, steps, y_transformer, **kwargs):
+    def __init__(
+        self,
+        steps,
+        y_transformer,
+        predict_use_inverse=False,
+        **kwargs
+    ):
         self.y_transformer = y_transformer
+        self.predict_use_inverse = predict_use_inverse
         super().__init__(steps=steps, **kwargs)
 
         if not hasattr(y_transformer, "transform"):
@@ -130,7 +141,7 @@ class PipelineY(Pipeline):
 
     # pylint: disable=arguments-differ
     @if_delegate_has_method(delegate='_final_estimator')
-    def predict(self, X, inverse=False):
+    def predict(self, X, inverse=None):
         """Applies transforms to the data, and the predict method of the
         final estimator. Valid only if the final estimator implements
         predict.
@@ -141,10 +152,14 @@ class PipelineY(Pipeline):
             Data to predict on. Must fulfill input requirements of
             first step of the pipeline.
 
-        inverse : bool, default: False
+        inverse : bool, default: None
             Whether to apply inverse_transform on predicted values.
+            If not provided, I will use ``predict_use_inverse`` to
+            determine whether the inverse transform should be applied.
 
         """
+        if inverse is None:
+            inverse = self.predict_use_inverse
         y_pred = super().predict(X)
         if inverse:
             y_pred = self.y_inverse_transform(y_pred)

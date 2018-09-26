@@ -66,6 +66,16 @@ class TestPipelineY:
         )
         return pipeline
 
+    @pytest.fixture
+    def pipeline_inverse(self, pipeliney_cls, X, y):
+        pipeline = pipeliney_cls(
+            steps=[('count', CountVectorizer(analyzer='char')),
+                   ('clf', BernoulliNB())],
+            y_transformer=LabelEncoder(),
+            predict_use_inverse=True,
+        )
+        return pipeline.fit(X, y)
+
     def test_init(self, pipeliney_cls):
         with pytest.raises(TypeError):
             pipeliney_cls(
@@ -122,6 +132,10 @@ class TestPipelineY:
 
     def test_predict_inverse(self, pipeline, X):
         assert (pipeline.predict(X, inverse=True) ==
+                ['F', 'M', 'M', 'F', 'F']).all()
+
+    def test_predict_use_inverse(self, pipeline_inverse, X):
+        assert (pipeline_inverse.predict(X) ==
                 ['F', 'M', 'M', 'F', 'F']).all()
 
     def test_score(self, pipeline, X, y):
