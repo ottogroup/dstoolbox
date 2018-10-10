@@ -278,7 +278,7 @@ class DictFeatureUnion(FeatureUnion):
         """
         self._validate_transformers()
         result = Parallel(n_jobs=self.n_jobs)(
-            delayed(_fit_transform_one)(trans, weight, X, y,
+            delayed(_fit_transform_one)(trans, X, y, weight,
                                         **fit_params)
             for _, trans, weight in self._iter())
 
@@ -309,7 +309,7 @@ class DictFeatureUnion(FeatureUnion):
 
         """
         Xs = Parallel(n_jobs=self.n_jobs)(
-            delayed(_transform_one)(trans, weight, X)
+            delayed(_transform_one)(trans, X, None, weight)
             for name, trans, weight in self._iter())
 
         if not Xs:
@@ -390,7 +390,7 @@ class DataFrameFeatureUnion(FeatureUnion):
         """
         self._validate_transformers()
         result = Parallel(n_jobs=self.n_jobs)(
-            delayed(_fit_transform_one)(trans, weight, X, y,
+            delayed(_fit_transform_one)(trans, X, y, weight,
                                         **fit_params)
             for _, trans, weight in self._iter())
 
@@ -432,7 +432,7 @@ class DataFrameFeatureUnion(FeatureUnion):
 
         """
         Xs = Parallel(n_jobs=self.n_jobs)(
-            delayed(_transform_one)(trans, weight, X)
+            delayed(_transform_one)(trans, X, None, weight)
             for _, trans, weight in self._iter())
 
         if not Xs:

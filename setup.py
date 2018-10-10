@@ -8,7 +8,7 @@ with open('VERSION', 'r') as f:
 install_requires = [
     'numpy',
     'pandas',
-    'scikit-learn>=0.19,<0.20dev0',
+    'scikit-learn>=0.20,<0.21dev0',
     'scipy',
     ]
 
