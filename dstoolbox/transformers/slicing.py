@@ -104,7 +104,7 @@ class ItemSelector(BaseEstimator, TransformerMixin):
                 Xt = Xt.values
         elif self.only_strings_ or self.is_callable_:
             raise ValueError(
-                "List of strings as keys works only with pd.DataFrame."
+                "List of strings as keys works only with pd.DataFrame or dict."
             )
         else:
             Xt = X[:, self.key]
