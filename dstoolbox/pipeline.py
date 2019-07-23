@@ -564,7 +564,11 @@ class TimedPipeline(Pipeline):
 
     Note: In contrast to sklearn.pipeline.Pipeline, this additionally
     prints information about how long each fit, transformation, and
-    prediction step took.
+    prediction step took. Although sklearn's Pipeline has a verbose
+    argument since 0.21 which also prints how long transformation
+    steps took, the functionality is not exactly the
+    same. E.g. TimedPipeline also prints results from prediction and
+    allows to pass in a custom sink for the logs.
 
     Parameters
     ----------
@@ -588,6 +592,11 @@ class TimedPipeline(Pipeline):
         The target where the string messages are sent to. Is print by
         default but could, for example, be switched to a logger.
 
+    verbose : boolean, optional(default=False)
+        If True, the time elapsed while fitting each transformer will
+        be printed as it is completed. Note: This is sklearn
+        functionality, not dstoolbox.
+
     Attributes
     ----------
     named_steps : dict
@@ -596,11 +605,12 @@ class TimedPipeline(Pipeline):
 
     """
 
-    def __init__(self, steps, memory=None, sink=print):
+    def __init__(self, steps, memory=None, verbose=False, sink=print):
         # pylint: disable=super-init-not-called
         self.steps = _add_timed_sequence(steps, sink)
         self.sink = sink
         self.memory = memory
+        self.verbose = verbose
 
         self._validate_steps()
 
