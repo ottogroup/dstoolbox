@@ -157,6 +157,18 @@ class TestPipelineY:
         gs = GridSearchCV(pipeline_regr, gs_params, cv=2)
         gs.fit(X, y)
 
+    def test_is_deprecated(self, pipeliney_cls, recwarn):
+        pipeliney_cls([
+            ('count', CountVectorizer(analyzer='char')),
+            ('clf', BernoulliNB()),
+        ], y_transformer=LabelEncoder())
+        warn = recwarn.pop(DeprecationWarning).message.args[0]
+        msg = (
+            "PipelineY is deprecated and will be removed in a future release. "
+            "Please use sklearn.compose.TransformedTargetRegressor instead."
+        )
+        assert warn == msg
+
 
 class TestSliceMixin:
     @pytest.fixture
@@ -166,7 +178,7 @@ class TestSliceMixin:
 
     @pytest.fixture
     def slice_pipeline_cls(self, slice_mixin_cls):
-        class SlicePipeline(Pipeline, slice_mixin_cls):
+        class SlicePipeline(slice_mixin_cls, Pipeline):
             pass
 
         return SlicePipeline
@@ -502,7 +514,8 @@ class TestDataFrameFeatureUnion:
                 ('select-df', item_selector_cls(['age'])),
                 ('select-array', Pipeline([
                     ('select', item_selector_cls(['age'])),
-                    ('to-array', FunctionTransformer(lambda x: x)),
+                    ('to-array', FunctionTransformer(
+                        lambda x: x, validate=True)),
                 ])),
             ],
             ignore_index=True,
@@ -694,13 +707,13 @@ class TestTimedPipeline:
     @pytest.fixture
     def steps(self):
         """Pipeline steps with 2 transformers and 1 classifier."""
-        clf = LogisticRegression()
+        clf = LogisticRegression(solver='liblinear')
         # add a mock transform method so that we can call
         # fit_transform on pipeline
         clf.transform = clf.predict
         steps = [
-            ('sleep_0023', FunctionTransformer(_slow23)),
-            ('sleep_0055', FunctionTransformer(_slow55)),
+            ('sleep_0023', FunctionTransformer(_slow23, validate=True)),
+            ('sleep_0055', FunctionTransformer(_slow55, validate=True)),
             ('clf', clf),
         ]
         return steps
@@ -806,10 +819,10 @@ class TestTimedPipeline:
         lines = [c[0][0] for c in sink.call_args_list]
         assert len(lines) == 3 + 3 + 1
         self.assert_lines_correct_form(lines)
-        assert lines[1] == (
+        self.assert_lines_same_output(lines[1], (
             '{"name": "a name that is much longer t", "method": "transform"'
-            '         , "duration":        0.023, "shape": "100x20"}')
-        assert lines[4] == expected[1]
+            '         , "duration":        0.023, "shape": "100x20"}'))
+        self.assert_lines_same_output(lines[4], expected[1])
 
     def test_pipeline_is_pickleable(
             self, timed_pipeline_cls, data, tmpdir, capsys):
@@ -818,7 +831,7 @@ class TestTimedPipeline:
         X, y = data
         timed_pipeline = timed_pipeline_cls([
             ('scale', StandardScaler()),
-            ('clf', LogisticRegression()),
+            ('clf', LogisticRegression(solver='liblinear')),
         ], sink=print)
 
         timed_pipeline.fit(X, y)
@@ -857,10 +870,10 @@ class TestTimedPipeline:
         lines = [c[0][0] for c in sink.call_args_list]
         assert len(lines) == 3 + 3 + 1 + 1 + 1 + 1
         self.assert_lines_correct_form(lines)
-        assert lines[1] == expected[0]
-        assert lines[4] == expected[1]
-        assert lines[7] == expected[2]
-        assert lines[8] == expected[3]
+        self.assert_lines_same_output(lines[1], expected[0])
+        self.assert_lines_same_output(lines[4], expected[1])
+        self.assert_lines_same_output(lines[7], expected[2])
+        self.assert_lines_same_output(lines[8], expected[3])
 
     def test_excess_add_timing(self, timed_pipeline, data, expected):
         sink = timed_pipeline.sink
@@ -872,10 +885,10 @@ class TestTimedPipeline:
         lines = [c[0][0] for c in sink.call_args_list]
         assert len(lines) == 3 + 3 + 1 + 1 + 1 + 1
         self.assert_lines_correct_form(lines)
-        assert lines[1] == expected[0]
-        assert lines[4] == expected[1]
-        assert lines[7] == expected[2]
-        assert lines[8] == expected[3]
+        self.assert_lines_same_output(lines[1], expected[0])
+        self.assert_lines_same_output(lines[4], expected[1])
+        self.assert_lines_same_output(lines[7], expected[2])
+        self.assert_lines_same_output(lines[8], expected[3])
 
     def test_excess_shed_timing(self, timed_pipeline, data):
         sink = timed_pipeline.sink

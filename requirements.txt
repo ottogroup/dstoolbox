@@ -1,7 +1,7 @@
-numpy==1.14.0
+numpy>=1.14.0
 pandas>=0.23.1
-python-dateutil==2.6.1
-pytz==2017.2
-scikit-learn>=0.20,<0.21dev0
+python-dateutil>=2.6.1
+pytz>=2017.2
+scikit-learn>=0.21,<0.22dev0
 scipy>=1.0.0
-six==1.10.0
+six>=1.10.0

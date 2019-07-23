@@ -4,7 +4,6 @@ import numpy as np
 import pytest
 
 
-@pytest.mark.XLabelEncoder
 class TestXLabelEncoder:
     """
     Test XLabelEncoder
@@ -92,7 +91,7 @@ class TestParallelFunctionTransformer:
     @pytest.fixture
     def function_transformer(
             self, function_transformer_cls, data):
-        return function_transformer_cls(func=mean_func).fit(data)
+        return function_transformer_cls(func=mean_func, validate=True).fit(data)
 
     @pytest.mark.parametrize('n_jobs, expected', [
         (1, 10.5 * np.ones((20, 1)).reshape(-1, 1)),

@@ -117,6 +117,7 @@ class W2VClassifier(BaseEstimator):
 
             # Throw away the smallest index, since it is the initial
             # word itself.
+            # pylint: disable=invalid-unary-operand-type
             neighbor_indices = fast_argsort(-similarity, n_neighbors + 1)[1:]
 
             neighbors.append(neighbor_indices)

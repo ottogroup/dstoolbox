@@ -160,7 +160,7 @@ class TestGetNodesEdges:
 
     def test_not_pipeline_or_feature_union(self, get_nodes_edges):
         with pytest.raises(TypeError) as exc:
-            get_nodes_edges('a name', FunctionTransformer())
+            get_nodes_edges('a name', FunctionTransformer(validate=True))
 
         assert str(exc.value) == (
             "Need a (sklearn) Pipeline or FeatureUnion as input.")
@@ -183,8 +183,8 @@ class TestGetNodesEdges:
 
     def test_case_simple_pipeline(self, get_nodes_edges):
         pipe = Pipeline([
-            ('bar', FunctionTransformer()),
-            ('baz', FunctionTransformer()),
+            ('bar', FunctionTransformer(validate=True)),
+            ('baz', FunctionTransformer(validate=True)),
         ])
         nodes, edges = get_nodes_edges('my_pipe', pipe)
 
@@ -200,8 +200,8 @@ class TestGetNodesEdges:
 
     def test_case_simple_feature_union(self, get_nodes_edges):
         union = FeatureUnion([
-            ('bar', FunctionTransformer()),
-            ('baz', FunctionTransformer()),
+            ('bar', FunctionTransformer(validate=True)),
+            ('baz', FunctionTransformer(validate=True)),
         ])
         nodes, edges = get_nodes_edges('my_union', union)
 
@@ -220,7 +220,7 @@ class TestGetNodesEdges:
             ('bar', Pipeline([
                 ('baz', Pipeline([
                     ('spam', Pipeline([
-                        ('baz', FunctionTransformer()),
+                        ('baz', FunctionTransformer(validate=True)),
                     ])),
                 ])),
             ])),
@@ -247,12 +247,12 @@ class TestGetNodesEdges:
 
     def test_case_nested_pipeline_feature_union(self, get_nodes_edges):
         pipe = Pipeline([
-            ('bar', FunctionTransformer()),
+            ('bar', FunctionTransformer(validate=True)),
             ('baz', FeatureUnion([
-                ('bar', FunctionTransformer()),
-                ('baz', FunctionTransformer()),
+                ('bar', FunctionTransformer(validate=True)),
+                ('baz', FunctionTransformer(validate=True)),
             ])),
-            ('spam', FunctionTransformer()),
+            ('spam', FunctionTransformer(validate=True)),
         ])
         nodes, edges = get_nodes_edges('my_pipe', pipe)
 
@@ -279,36 +279,36 @@ class TestGetNodesEdges:
     def test_case_multiple_nested_pipelines_and_feature_unions(
             self, get_nodes_edges):
         pipe = Pipeline([
-            ('1', FunctionTransformer()),
-            ('2', FunctionTransformer()),
+            ('1', FunctionTransformer(validate=True)),
+            ('2', FunctionTransformer(validate=True)),
             ('3', FeatureUnion([
-                ('1', FunctionTransformer()),
+                ('1', FunctionTransformer(validate=True)),
                 ('2', Pipeline([
-                    ('30', FunctionTransformer()),
+                    ('30', FunctionTransformer(validate=True)),
                     ('20', FeatureUnion([
                         ('p', FeatureUnion([
-                            ('p0', FunctionTransformer()),
-                            ('p1', FunctionTransformer()),
+                            ('p0', FunctionTransformer(validate=True)),
+                            ('p1', FunctionTransformer(validate=True)),
                         ])),
                         ('q', FeatureUnion([
-                            ('q0', FunctionTransformer()),
-                            ('q1', FunctionTransformer()),
+                            ('q0', FunctionTransformer(validate=True)),
+                            ('q1', FunctionTransformer(validate=True)),
                         ])),
                     ])),
-                    ('10', FunctionTransformer()),
+                    ('10', FunctionTransformer(validate=True)),
                 ])),
                 ('3', FeatureUnion([
-                    ('f0', FunctionTransformer()),
-                    ('f1', FunctionTransformer()),
+                    ('f0', FunctionTransformer(validate=True)),
+                    ('f1', FunctionTransformer(validate=True)),
                 ])),
             ])),
-            ('4', FunctionTransformer()),
+            ('4', FunctionTransformer(validate=True)),
             ('5', FeatureUnion([
-                ('100', FunctionTransformer()),
-                ('200', FunctionTransformer()),
-                ('300', FunctionTransformer()),
+                ('100', FunctionTransformer(validate=True)),
+                ('200', FunctionTransformer(validate=True)),
+                ('300', FunctionTransformer(validate=True)),
             ])),
-            ('06', FunctionTransformer()),
+            ('06', FunctionTransformer(validate=True)),
         ])
         nodes, edges = get_nodes_edges('my_pipe', pipe)
 
