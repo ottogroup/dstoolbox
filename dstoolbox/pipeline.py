@@ -204,6 +204,11 @@ class SliceMixin:
         2) access by index (e.g. pipeline[-1])
         3) access by slice (e.g. pipeline[:3])
 
+    Example
+    -------
+    >>>  class SlicePipeline(SliceMixin, Pipeline):
+    >>>      pass
+
     """
     def __getitem__(self, idx):
         container = (getattr(self, 'steps', False) or

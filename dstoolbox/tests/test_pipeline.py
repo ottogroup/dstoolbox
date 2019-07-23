@@ -166,7 +166,7 @@ class TestSliceMixin:
 
     @pytest.fixture
     def slice_pipeline_cls(self, slice_mixin_cls):
-        class SlicePipeline(Pipeline, slice_mixin_cls):
+        class SlicePipeline(slice_mixin_cls, Pipeline):
             pass
 
         return SlicePipeline
