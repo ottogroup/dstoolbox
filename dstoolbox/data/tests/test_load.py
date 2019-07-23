@@ -37,7 +37,7 @@ class TestLoadW2VData:
             # vector information; this is reflected in this mocked
             # function.
             nrows = kwargs.get('nrows')
-            if nrows is 1:
+            if nrows == 1:
                 return mock_w2v_header
             return mock_w2v_file
 

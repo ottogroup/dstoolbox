@@ -77,6 +77,7 @@ class ToDataFrame(BaseEstimator, TransformerMixin):
     def _series_to_df(self, X, column):
         """Transforms a pandas Series to a DataFrame."""
         Xt = pd.DataFrame(X)
+        # pylint: disable=unsubscriptable-object
         return Xt.rename(columns={Xt.columns[0]: column})
 
     def _dict_to_df(self, X):

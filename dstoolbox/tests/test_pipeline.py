@@ -514,7 +514,8 @@ class TestDataFrameFeatureUnion:
                 ('select-df', item_selector_cls(['age'])),
                 ('select-array', Pipeline([
                     ('select', item_selector_cls(['age'])),
-                    ('to-array', FunctionTransformer(lambda x: x, validate=True)),
+                    ('to-array', FunctionTransformer(
+                        lambda x: x, validate=True)),
                 ])),
             ],
             ignore_index=True,
