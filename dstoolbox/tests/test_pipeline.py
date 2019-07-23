@@ -502,7 +502,7 @@ class TestDataFrameFeatureUnion:
                 ('select-df', item_selector_cls(['age'])),
                 ('select-array', Pipeline([
                     ('select', item_selector_cls(['age'])),
-                    ('to-array', FunctionTransformer(lambda x: x)),
+                    ('to-array', FunctionTransformer(lambda x: x, validate=True)),
                 ])),
             ],
             ignore_index=True,
@@ -694,13 +694,13 @@ class TestTimedPipeline:
     @pytest.fixture
     def steps(self):
         """Pipeline steps with 2 transformers and 1 classifier."""
-        clf = LogisticRegression()
+        clf = LogisticRegression(solver='liblinear')
         # add a mock transform method so that we can call
         # fit_transform on pipeline
         clf.transform = clf.predict
         steps = [
-            ('sleep_0023', FunctionTransformer(_slow23)),
-            ('sleep_0055', FunctionTransformer(_slow55)),
+            ('sleep_0023', FunctionTransformer(_slow23, validate=True)),
+            ('sleep_0055', FunctionTransformer(_slow55, validate=True)),
             ('clf', clf),
         ]
         return steps
@@ -818,7 +818,7 @@ class TestTimedPipeline:
         X, y = data
         timed_pipeline = timed_pipeline_cls([
             ('scale', StandardScaler()),
-            ('clf', LogisticRegression()),
+            ('clf', LogisticRegression(solver='liblinear')),
         ], sink=print)
 
         timed_pipeline.fit(X, y)

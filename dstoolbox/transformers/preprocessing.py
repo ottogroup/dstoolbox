@@ -5,8 +5,8 @@ from sklearn.base import BaseEstimator
 from sklearn.base import TransformerMixin
 from sklearn.utils import check_array
 from sklearn.utils.validation import check_is_fitted
-from sklearn.externals.joblib import Parallel
-from sklearn.externals.joblib import delayed
+from joblib import Parallel
+from joblib import delayed
 
 
 def _identity(X):
