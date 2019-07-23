@@ -4,7 +4,6 @@ import numpy as np
 import pytest
 
 
-@pytest.mark.XLabelEncoder
 class TestXLabelEncoder:
     """
     Test XLabelEncoder
