@@ -157,6 +157,18 @@ class TestPipelineY:
         gs = GridSearchCV(pipeline_regr, gs_params, cv=2)
         gs.fit(X, y)
 
+    def test_is_deprecated(self, pipeliney_cls, recwarn):
+        pipeliney_cls([
+            ('count', CountVectorizer(analyzer='char')),
+            ('clf', BernoulliNB()),
+        ], y_transformer=LabelEncoder())
+        warn = recwarn.pop(DeprecationWarning).message.args[0]
+        msg = (
+            "PipelineY is deprecated and will be removed in a future release. "
+            "Please use sklearn.compose.TransformedTargetRegressor instead."
+        )
+        assert warn == msg
+
 
 class TestSliceMixin:
     @pytest.fixture

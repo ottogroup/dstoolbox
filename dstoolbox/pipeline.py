@@ -4,6 +4,7 @@ import itertools
 from functools import wraps
 import time
 import types
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -62,6 +63,10 @@ class PipelineY(Pipeline):
             predict_use_inverse=False,
             **kwargs
     ):
+        warnings.warn(DeprecationWarning(
+            "PipelineY is deprecated and will be removed in a future release. "
+            "Please use sklearn.compose.TransformedTargetRegressor instead."
+        ))
         self.y_transformer = y_transformer
         self.predict_use_inverse = predict_use_inverse
         super().__init__(steps=steps, **kwargs)
