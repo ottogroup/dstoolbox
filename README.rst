@@ -1,7 +1,9 @@
 Otto Group BI Data Science Toolbox
 ==================================
 
-NOTE: THIS IS NOT YET RELEASE READY, PLEASE BE PATIENT.
+NOTE: This project is on life support. That means there are probably
+not any new features being added, but there will be regular updates to
+support upcoming versions of sklearn and pandas.
 
 This repository contains tools that make working with
 `scikit-learn <http://scikit-learn.org/>`__ and
