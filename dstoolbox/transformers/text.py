@@ -142,7 +142,6 @@ class TextFeaturizer(CountVectorizer):  # pylint: disable=missing-docstring
                     if self.unknown_token is None:
                         # Ignore out-of-vocabulary items for fixed_vocab=True
                         continue
-                    else:
-                        row.append(vocabulary[self.unknown_token])
+                    row.append(vocabulary[self.unknown_token])
             X.append(row)
         return vocabulary, np.asarray(X)
