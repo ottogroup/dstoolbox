@@ -95,7 +95,7 @@ class ToDataFrame(BaseEstimator, TransformerMixin):
             raise ValueError("dict values must be 1d arrays.")
 
         df = pd.DataFrame({k: np.squeeze(v) for k, v in X.items()})
-        return df[[c for c in sorted(df)]]
+        return df[sorted(df)]
 
     def transform(self, X):
         """Transform incoming data to a pandas DataFrame.

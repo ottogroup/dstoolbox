@@ -367,18 +367,21 @@ class DataFrameFeatureUnion(FeatureUnion):
             transformer_list,
             n_jobs=1,
             transformer_weights=None,
+            verbose=False,
             ignore_index=True,
             copy=True,
             keep_original=False,
     ):
-        super(DataFrameFeatureUnion, self).__init__(
-            transformer_list=transformer_list,
-            n_jobs=n_jobs,
-            transformer_weights=transformer_weights)
-
         self.ignore_index = ignore_index
         self.copy = copy
         self.keep_original = keep_original
+
+        super(DataFrameFeatureUnion, self).__init__(
+            transformer_list=transformer_list,
+            n_jobs=n_jobs,
+            transformer_weights=transformer_weights,
+            verbose=verbose,
+        )
 
     def fit_transform(self, X, y=None, **fit_params):
         """Fit all transformers using X, transform the data and

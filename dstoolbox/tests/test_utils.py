@@ -174,7 +174,7 @@ class TestGetNodesEdges:
         assert edges == [('empty pipe', 'bar')]
 
     def test_case_empty_feature_union(self, get_nodes_edges):
-        union = FeatureUnion([('bar', None)])
+        union = FeatureUnion([('bar', 'drop')])
         nodes, edges = get_nodes_edges('empty union', union)
 
         expected_nodes = {'empty union': union}
