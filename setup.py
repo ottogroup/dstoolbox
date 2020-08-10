@@ -5,12 +5,12 @@ from setuptools import setup, find_packages
 with open('VERSION', 'r') as f:
     version = f.read().rstrip()
 
-install_requires = [
-    'numpy',
-    'pandas',
-    'scikit-learn>=0.21,<0.23dev0',
-    'scipy',
-    ]
+
+with open('requirements.txt', 'r') as f:
+    requirements = f.read().strip().split('\n')
+
+
+install_requires = requirements
 
 tests_require = [
     'pytest',
