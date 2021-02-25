@@ -51,8 +51,8 @@ class ItemSelector(BaseEstimator, TransformerMixin):
         if not isinstance(key, (list, tuple)):
             key = [key]
 
-        self.only_ints_ = all([isinstance(k, int) for k in key])
-        self.only_strings_ = all([isinstance(k, str) for k in key])
+        self.only_ints_ = all(isinstance(k, int) for k in key)
+        self.only_strings_ = all(isinstance(k, str) for k in key)
 
     # pylint: disable=unused-argument
     def fit(self, X, y=None):

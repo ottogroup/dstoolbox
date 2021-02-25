@@ -48,7 +48,7 @@ class TestHierarchicalClustering:
         result = clustering(np.zeros((1, 10)))
         assert (result == np.array([0])).all()
 
-    @pytest.yield_fixture
+    @pytest.fixture
     def patched_clustering_cls_and_mocks(self):
         with patch('dstoolbox.cluster.linkage') as lk:
             with patch('dstoolbox.cluster.fcluster') as fc:

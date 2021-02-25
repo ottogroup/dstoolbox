@@ -114,7 +114,7 @@ class Padder3d(BaseEstimator, TransformerMixin):
             m = min(self.max_size[0], len(arr))
             if not m:
                 continue
-            arr = np.array(arr[:m])
+            arr = np.array(arr[:m], dtype=object)
             for j, vec in enumerate(arr):
                 n = min(self.max_size[1], len(vec))
                 Xt[i, j, :n] = vec[:n]
