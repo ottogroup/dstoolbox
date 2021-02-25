@@ -376,7 +376,7 @@ class DataFrameFeatureUnion(FeatureUnion):
         self.copy = copy
         self.keep_original = keep_original
 
-        super(DataFrameFeatureUnion, self).__init__(
+        super().__init__(
             transformer_list=transformer_list,
             n_jobs=n_jobs,
             transformer_weights=transformer_weights,

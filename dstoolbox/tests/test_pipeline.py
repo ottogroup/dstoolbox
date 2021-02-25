@@ -8,7 +8,7 @@ from unittest.mock import Mock
 
 import numpy as np
 import pandas as pd
-from pandas.util.testing import assert_frame_equal
+from pandas.testing import assert_frame_equal
 import pytest
 from sklearn.datasets import make_classification
 from sklearn.feature_extraction.text import CountVectorizer
@@ -318,7 +318,7 @@ class TestDictFeatureUnion:
     # pylint: disable=missing-docstring
     @pytest.fixture(params=[
         {'transformer_weights': None},
-        {'transformer_weights': {'scaler': 1, 'polynomialfeatures': 1.5}},
+        {'transformer_weights': {'scaler': 1, 'polynomialfeatures': 1}},
     ])
     def dict_feature_union(
             self,
@@ -326,7 +326,7 @@ class TestDictFeatureUnion:
             transformer_list,
             request,
     ):
-        transformer_weights = request.param
+        transformer_weights = request.param['transformer_weights']
         union = dict_feature_union_cls(
             transformer_list,
             transformer_weights=transformer_weights,
