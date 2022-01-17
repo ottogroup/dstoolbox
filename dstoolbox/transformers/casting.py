@@ -70,9 +70,8 @@ class ToDataFrame(BaseEstimator, TransformerMixin):
 
         if (X.ndim > 1) and (X.shape[1] != len(columns)):
             raise ValueError(
-                "ToDataFrame was given data with {} columns but "
-                "was initialized with {} column names.".format(
-                    X.shape[1], len(columns)))
+                f"ToDataFrame was given data with { X.shape[1]} columns but "
+                f"was initialized with {len(columns)} column names.")
 
     def _series_to_df(self, X, column):
         """Transforms a pandas Series to a DataFrame."""

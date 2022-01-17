@@ -113,6 +113,6 @@ class ItemSelector(BaseEstimator, TransformerMixin):
         if self.force_2d and (ndim == 1):
             Xt = np.expand_dims(Xt, axis=1)
         if self.force_2d and (ndim > 2):
-            raise ValueError("ItemSelector cannot force 2d on {}d data."
-                             "".format(ndim))
+            raise ValueError(f"ItemSelector cannot force 2d on {ndim}d data."
+                             "")
         return Xt

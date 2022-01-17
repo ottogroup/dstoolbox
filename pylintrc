@@ -57,7 +57,8 @@ disable =
     super-on-old-class,
     too-many-function-args,
     import-outside-toplevel,
-
+    unspecified-encoding,
+    consider-using-f-string
 
 [REPORTS]
 

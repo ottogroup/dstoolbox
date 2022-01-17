@@ -84,7 +84,7 @@ class TextFeaturizer(CountVectorizer):  # pylint: disable=missing-docstring
             raise ValueError("binary=True does not work with TextFeaturizer.")
         if (unknown_token is not None) and not isinstance(unknown_token, str):
             raise TypeError("unknown_token must be None or a str, not of type "
-                            "{}.".format(type(unknown_token)))
+                            f"{type(unknown_token)}.")
         self.unknown_token = unknown_token
 
     def fit_transform(self, raw_documents, y=None):
