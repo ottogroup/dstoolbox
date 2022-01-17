@@ -55,7 +55,7 @@ def _make_node(name, est, short_name=True):
 
     label = _get_label(name, short_name=short_name)
     label_type = repr(type(est)).strip("'<>").rsplit('.')[-1]
-    label += '\n({})'.format(label_type)
+    label += f'\n({label_type})'
     shape = _get_shape(est)
 
     return pydotplus.Node(

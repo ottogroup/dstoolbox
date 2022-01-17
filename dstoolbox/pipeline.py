@@ -516,12 +516,7 @@ def timing_decorator(
         except AttributeError:
             s_shape = s_shape_tmpl.format('"-"')
 
-        out = '{}, {}, {}, {}'.format(
-            s_name,
-            s_method,
-            s_dura,
-            s_shape,
-        )
+        out = f'{s_name}, {s_method}, {s_dura}, {s_shape}'
 
         sink("{" + out + "}")
         return result
