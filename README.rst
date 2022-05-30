@@ -85,5 +85,5 @@ Guidelines
 -  Don't add dependencies unless absolutely necessary.
 
 
-.. |Build Status| image:: https://travis-ci.org/ottogroup/dstoolbox.svg?branch=master
-   :target: https://travis-ci.org/ottogroup/dstoolbox
+.. |Build Status| image:: https://github.com/ottogroup/dstoolbox/actions/workflows/build_test_python.yml/badge.svg
+   :target: https://github.com/ottogroup/dstoolbox/actions/workflows/build_test_python.yml
