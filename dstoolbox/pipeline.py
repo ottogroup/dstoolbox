@@ -1,7 +1,7 @@
 """Extend sklearn's Pipeline and FeatureUnion."""
 
 import itertools
-from functools import wraps
+from functools import wraps, partial
 import time
 import types
 import warnings
@@ -16,7 +16,17 @@ from sklearn.pipeline import Parallel
 from sklearn.pipeline import Pipeline
 from sklearn.pipeline import delayed
 from sklearn.utils import tosequence
-from sklearn.utils.metaestimators import if_delegate_has_method
+
+
+# TODO: Remove `if_delegate_has_method` once sklearn support for <1.0
+# is dropped.
+try:
+    from sklearn.utils.metaestimators import if_delegate_has_method
+except ImportError:
+    from sklearn.utils.metaestimators import available_if
+
+    def if_delegate_has_method(delegate):
+        return available_if(partial(hasattr, name=delegate))
 
 
 class PipelineY(Pipeline):
