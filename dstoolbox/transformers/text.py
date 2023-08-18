@@ -144,4 +144,4 @@ class TextFeaturizer(CountVectorizer):  # pylint: disable=missing-docstring
                         continue
                     row.append(vocabulary[self.unknown_token])
             X.append(row)
-        return vocabulary, np.asarray(X)
+        return vocabulary, np.asarray(X, dtype=object)

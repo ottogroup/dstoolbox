@@ -27,10 +27,11 @@ class TestTextFeaturizer:
     def expected(self):
         return np.asarray([
             [0, 1, 2],
-            [2, 1],
-            [3, 1],
+            [2, 1,],
+            [3, 1,],
             [],
-        ])
+        ],
+         dtype=object)
 
     @pytest.fixture
     def vocab(self):
@@ -68,7 +69,7 @@ class TestTextFeaturizer:
             [1, 0],
             [0],
             [],
-        ])
+        ], dtype=object)
         self.assert_arrs_equal(result, expected)
 
     def test_lower_case_false(self, featurizer_cls, text):
@@ -94,7 +95,7 @@ class TestTextFeaturizer:
             [b, b, b, s, b, b],
             [c, c, s, b, b],
             [],
-        ])
+        ], dtype=object)
         self.assert_arrs_equal(result, expected)
 
     def test_unknown_token_fit_and_transform(self, featurizer_cls, text):
@@ -108,7 +109,7 @@ class TestTextFeaturizer:
             [1, 0],
             [2, 0],
             [],
-        ])
+        ], dtype=object)
         self.assert_arrs_equal(result, expected)
 
     def test_unknown_token_fit_transform(self, featurizer_cls, text):
@@ -124,7 +125,7 @@ class TestTextFeaturizer:
             [1, 0],
             [2, 0],
             [],
-        ])
+        ], dtype=object)
         self.assert_arrs_equal(result, expected)
 
     def test_unknown_token_wrong_type(self, featurizer_cls):
