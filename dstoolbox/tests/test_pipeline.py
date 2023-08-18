@@ -242,7 +242,7 @@ class TestSliceMixin:
 
     @pytest.fixture
     def slice_feature_union_cls(self, slice_mixin_cls):
-        class SliceFeatureUnion(FeatureUnion, slice_mixin_cls):
+        class SliceFeatureUnion(slice_mixin_cls, FeatureUnion):
             pass
 
         return SliceFeatureUnion
@@ -279,6 +279,7 @@ class TestSliceMixin:
 
     def test_slice_mixin_feature_union_select_slice_copy_is_shallow(
             self, feature_union):
+        print(feature_union)
         assert feature_union[:][0][1] is feature_union.transformer_list[0][1]
         assert feature_union[:][1][1] is feature_union.transformer_list[1][1]
 
@@ -894,7 +895,6 @@ class TestTimedPipeline:
         sink = timed_pipeline.sink
         X, y = data
 
-        timed_pipeline.shed_timing()
         timed_pipeline.shed_timing()
         timed_pipeline.fit(X, y).predict(X)
         assert sink.call_count == 0

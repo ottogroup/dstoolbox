@@ -5,6 +5,7 @@ from functools import wraps, partial
 import time
 import types
 import warnings
+from typing import Callable
 
 import numpy as np
 import pandas as pd
@@ -25,8 +26,16 @@ try:
 except ImportError:
     from sklearn.utils.metaestimators import available_if
 
-    def if_delegate_has_method(delegate):
-        return available_if(partial(hasattr, name=delegate))
+    def if_delegate_has_method(delegate: str) -> Callable:
+        def _hasattr(obj: object, name: str):
+            """Custom hasattr function to make it work with partial which
+            requires keyword arguments
+            https://stackoverflow.com/questions/11173660/can-one-
+            partially-apply-the-second-argument-of-a-function-
+            that-takes-no-keyword
+            """
+            return hasattr(obj, name)
+        return available_if(partial(_hasattr, name=delegate))
 
 
 class PipelineY(Pipeline):
