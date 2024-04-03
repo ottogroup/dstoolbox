@@ -249,7 +249,7 @@ class SliceMixin:
         return container[idx][1]
 
 
-class DictFeatureUnion(FeatureUnion):
+class DictFeatureUnion(FeatureUnion):  # pylint: disable=abstract-method, too-many-ancestors
     """This is like sklearn's FeatureUnion class, but intead of
     stacking the final features, merge them to a dictionary.
 
@@ -349,7 +349,7 @@ class DictFeatureUnion(FeatureUnion):
         return Xt
 
 
-class DataFrameFeatureUnion(FeatureUnion):
+class DataFrameFeatureUnion(FeatureUnion):  # pylint: disable=abstract-method, too-many-ancestors
     """Extends FeatureUnion to output Pandas Dataframe.
 
     Modified FeatureUnion that outputs a pandas dataframe if all

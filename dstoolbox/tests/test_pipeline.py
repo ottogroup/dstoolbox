@@ -242,7 +242,7 @@ class TestSliceMixin:
 
     @pytest.fixture
     def slice_feature_union_cls(self, slice_mixin_cls):
-        class SliceFeatureUnion(slice_mixin_cls, FeatureUnion):
+        class SliceFeatureUnion(slice_mixin_cls, FeatureUnion):  # pylint: disable=abstract-method, too-many-ancestors
             pass
 
         return SliceFeatureUnion
