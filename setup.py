@@ -38,6 +38,7 @@ setup(
     version=version,
     description=(
         'Tools that make working with scikit-learn and pandas easier.'),
+    long_description=README,
     author='Otto Group',
     author_email='benjamin.bossan@ottogroup.com',
     packages=find_packages(),
