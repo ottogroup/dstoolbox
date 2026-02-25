@@ -16,7 +16,6 @@ from sklearn.pipeline import FeatureUnion
 from sklearn.pipeline import Parallel
 from sklearn.pipeline import Pipeline
 from sklearn.pipeline import delayed
-from sklearn.utils import tosequence
 
 
 # TODO: Remove `if_delegate_has_method` once sklearn support for <1.0
@@ -546,7 +545,7 @@ def timing_decorator(
 
 def _add_timed_sequence(steps, sink):
     """For each step in steps, decorate its relevant methods."""
-    seq = tosequence(steps)
+    seq = list(steps)
     method_names = ('fit', 'transform', 'fit_transform', 'predict',
                     'predict_proba')
     for name, step in seq:
