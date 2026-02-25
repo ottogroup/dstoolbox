@@ -9,4 +9,4 @@ rm -f dist/*
 python setup.py sdist
 pip install dist/*
 python setup.py bdist_wheel
-twine upload --skip-existing -u $PYPI_USERNAME -p $PYPI_PASSWORD dist/*
+twine upload --skip-existing dist/*
