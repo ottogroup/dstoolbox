@@ -1,9 +1,26 @@
+===================
+Repository Archived
+===================
+
+This repository is now archived and is no longer actively maintained.
+
+What was 'dstoolbox'?
+=====================
+
+'dstoolbox' was the Otto Group BI Data Science Toolbox. It was created as a collection of small, reusable tools to make working with scikit-learn and pandas easier. It served our production services and machine learning workflows well over the years.
+
+We want to say a huge thank you to all the contributors and users who supported this project!
+
+What should you do now?
+=======================
+
+Because the repository is no longer maintained, we recommend looking into modern alternatives:
+
+* **Native library features**: Many workflows that once required custom helper functions in 'dstoolbox' are now natively supported in the latest versions of pandas and scikit-learn.
+* **Modern ecosystem tools**: For advanced machine learning pipelines, explore current, active frameworks within the PyData ecosystem that fit your specific workflow.
+
 Otto Group BI Data Science Toolbox
 ==================================
-
-NOTE: This project is on life support. That means there are probably
-not any new features being added, but there will be regular updates to
-support upcoming versions of sklearn and pandas.
 
 This repository contains tools that make working with
 `scikit-learn <http://scikit-learn.org/>`__ and
