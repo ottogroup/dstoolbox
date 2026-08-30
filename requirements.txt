@@ -1,4 +1,4 @@
-numpy>=1.22.3
+numpy>=2.4.4
 pandas>=1.4.2
 python-dateutil>=2.8.2
 pytz>=2022.1
